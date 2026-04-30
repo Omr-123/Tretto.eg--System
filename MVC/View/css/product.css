@@ -1,0 +1,235 @@
+/* ========================================
+   PRODUCT PAGE STYLES
+   ======================================== */
+
+.products-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+}
+
+.products-header {
+    text-align: center;
+    margin-bottom: 50px;
+    animation: fadeInDown .5s ease;
+}
+
+.products-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    color: var(--dark);
+    margin-bottom: 10px;
+}
+
+.products-header p {
+    font-size: 16px;
+    color: var(--mid);
+}
+
+/* ──────────── FILTERS ──────────── */
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+    animation: fadeIn .5s ease .1s both;
+}
+
+.filter-btn {
+    padding: 10px 24px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--mid);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all .3s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--rose);
+    color: var(--rose);
+}
+
+.filter-btn.active {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: #fff;
+}
+
+/* ──────────── PRODUCTS GRID ──────────── */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    animation: fadeIn .5s ease .2s both;
+}
+
+.product-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(45, 27, 37, .08);
+    transition: all .3s ease;
+    cursor: pointer;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(45, 27, 37, .15);
+}
+
+.product-image {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    background: var(--blush);
+    overflow: hidden;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .3s ease;
+}
+
+.product-card:hover .product-image img {
+    transform: scale(1.1);
+}
+
+.btn-favorite {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, .95);
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all .2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-favorite:hover {
+    background: var(--rose);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+.product-info {
+    padding: 20px;
+}
+
+.product-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 4px;
+}
+
+.product-category {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 8px;
+}
+
+.product-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    font-size: 12px;
+}
+
+.stars {
+    color: var(--gold);
+}
+
+.review-count {
+    color: var(--muted);
+}
+
+.product-price {
+    margin-bottom: 12px;
+}
+
+.price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--rose);
+}
+
+.btn-add-cart {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, var(--rose), var(--mauve));
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .3s ease;
+    letter-spacing: .05em;
+}
+
+.btn-add-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(232, 103, 138, .3);
+}
+
+/* ──────────── ANIMATIONS ──────────── */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ──────────── RESPONSIVE ──────────── */
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .products-header h1 {
+        font-size: 32px;
+    }
+}
+
+@media (max-width: 480px) {
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filters {
+        gap: 8px;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        font-size: 11px;
+    }
+}
