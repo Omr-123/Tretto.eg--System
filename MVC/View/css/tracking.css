@@ -1,0 +1,143 @@
+/* ════════════════════ TRACKING ════════════════════ */
+.track-box {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    padding: 36px;
+    max-width: 700px;
+    margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: var(--shadow)
+}
+
+.track-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 32px
+}
+
+.track-inp {
+    flex: 1;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    background: var(--blush);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--dark);
+    outline: none;
+    transition: border-color .2s;
+    border-radius: 12px
+}
+
+.track-inp:focus {
+    border-color: var(--rose)
+}
+
+.track-inp::placeholder {
+    color: var(--muted)
+}
+
+.track-result {
+    display: none
+}
+
+.track-result.show {
+    display: block
+}
+
+.track-order-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px
+}
+
+.toi-id {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dark)
+}
+
+.toi-date {
+    font-size: 12px;
+    color: var(--muted)
+}
+
+.toi-total {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--rose-d)
+}
+
+.status-timeline {
+    display: flex;
+    align-items: center;
+    margin-bottom: 28px
+}
+
+.st-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative
+}
+
+.st-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    z-index: 0
+}
+
+.st-step.done::after {
+    background: linear-gradient(90deg, var(--rose), var(--rose-l))
+}
+
+.st-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    z-index: 1;
+    position: relative;
+    transition: all .3s
+}
+
+.st-step.done .st-dot {
+    background: linear-gradient(135deg, var(--rose), var(--mauve));
+    border-color: transparent;
+    color: #fff
+}
+
+.st-step.active .st-dot {
+    border-color: var(--rose);
+    color: var(--rose);
+    box-shadow: 0 0 0 4px rgba(232, 103, 138, .15)
+}
+
+.st-lbl {
+    font-size: 10px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+    font-weight: 700;
+    text-align: center
+}
+
+.st-step.done .st-lbl,
+.st-step.active .st-lbl {
+    color: var(--rose)
+}

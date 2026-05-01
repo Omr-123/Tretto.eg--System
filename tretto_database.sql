@@ -301,3 +301,6 @@ CREATE INDEX idx_payment_orderID ON Payment(order_ID);
 -- ================================================
 -- DATABASE SETUP COMPLETE
 -- ================================================
+INSERT into cart (userID, prod_ID, quantity, addedDate) VALUES (1, 1, 2, CURRENT_TIMESTAMP());
+INSERT into product(prod_ID, name, description, price, stock, category, image) VALUES
+            ( 1, 'Denim Slide Sandal', 'A chic denim slide sandal with gold-tone buckles and playful sequin details. Distressed fabric with a cork-inspired sole for all-day comfort.', 850, 10, 'slippers', '../assets/images/Slipper1.png');
