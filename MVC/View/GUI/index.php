@@ -6,7 +6,7 @@
         <link rel="stylesheet" href="../css/main.css">
         <link rel="stylesheet" href="../css/index.css">
         <link rel="stylesheet" href="../css/navbar.css">
-        <title>Document</title>
+        <title>Tretto</title>
     </head>
     <body>
     <?php include 'component/navbar.php'; ?>
