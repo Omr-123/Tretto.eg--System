@@ -6,5 +6,4 @@ class Bag extends Product {
     public $bag_type;
     public $material;
     public $capacity;
-
 }
