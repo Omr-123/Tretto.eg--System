@@ -1,0 +1,113 @@
+/* ════════════════════ REVIEWS ════════════════════ */
+.review-form-box {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    padding: 32px;
+    max-width: 640px;
+    margin-bottom: 40px;
+    border-radius: 20px
+}
+
+.star-rating {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px
+}
+
+.star-btn {
+    font-size: 30px;
+    /* cursor: none; */
+    color: var(--border);
+    transition: color .15s;
+    background: none;
+    border: none
+}
+
+.star-btn.lit {
+    color: var(--rose)
+}
+
+.reviews-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px
+}
+
+.rev-card {
+    background: var(--white);
+    padding: 24px;
+    border: 1.5px solid var(--border);
+    border-radius: 16px
+}
+
+.rev-stars {
+    font-size: 13px;
+    color: var(--rose);
+    margin-bottom: 10px
+}
+
+.rev-text {
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--mid);
+    font-weight: 300;
+    margin-bottom: 14px;
+    font-style: italic
+}
+
+.rev-author {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
+
+.rev-av {
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, var(--rose), var(--mauve));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff
+}
+
+.rev-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dark)
+}
+
+.rev-prod {
+    font-size: 11px;
+    color: var(--muted)
+}
+
+/* ════════════════════ FAVORITES / EMPTY ════════════════════ */
+.empty-state {
+    text-align: center;
+    padding: 80px 24px
+}
+
+.empty-icon {
+    font-size: 60px;
+    margin-bottom: 20px;
+    opacity: .4
+}
+
+.empty-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--dark)
+}
+
+.empty-sub {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 28px
+}

@@ -1,81 +1,113 @@
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../css/all.css">
-        <title>Shopping Cart</title>
-    </head>
-
-
-   <body>
-
-    <?php include 'navbar.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/cart.css">
+    <script src="../javascript/product.js" defer></script>
+    <title>Shopping Cart - Tretto.eg</title>
+</head>
+<body>
+    <?php include 'component/navbar.php'; ?>
+    
     <div class="page" id="page-cart">
-        <div class="cart-container">
-            <div class="cart-header">
-                <h1>Shopping Cart</h1>
-                <p id="cart-item-count">0 items in your cart</p>
-            </div>
-
-            <div class="cart-content">
-                <div class="cart-items-section">
-                    <div class="cart-items" id="cart-items">
-                        <!-- Cart items will be dynamically loaded here via PHP -->
-                        <!-- Sample cart item structure -->
-                        <div class="cart-item" data-item-id="1">
-                            <div class="item-image">
-                                <img src="/images/product.jpg" alt="Product">
-                            </div>
-                            <div class="item-details">
-                                <h3 class="item-name">Product Name</h3>
-                                <p class="item-category">Category</p>
-                                <p class="item-price">EGP 0.00</p>
-                            </div>
-                            <div class="item-quantity">
-                                <button class="qty-btn minus" onclick="updateQty(this, -1)">−</button>
-                                <input type="number" class="qty-input" value="1" min="1">
-                                <button class="qty-btn plus" onclick="updateQty(this, 1)">+</button>
-                            </div>
-                            <div class="item-total">
-                                <p class="total-price">EGP 0.00</p>
-                            </div>
-                            <button class="btn-remove" onclick="removeItem(this)">×</button>
+        <div class="page-header">
+            <div class="sec-tag">🛒 Your Cart</div>
+            <h1 class="sec-title">Shopping <em>Bag</em></h1>
+        </div>
+        
+        <div class="page-wrap">
+            <div class="cart-layout">
+                <!-- CART ITEMS -->
+                <div>
+                    <!-- CART ITEM 1 -->
+                    <div class="cart-item-row">
+                        <div class="ci-img">
+                            <img src="../assets/images/Slipper1.png" alt="Denim Slide Sandal">
                         </div>
+                        <div class="ci-inf">
+                            <div class="ci-name">Denim Slide Sandal</div>
+                            <div class="ci-var">Size: 38 · Denim Blue</div>
+                            <div class="ci-qty">
+                                <button class="qty-b">−</button>
+                                <span class="qty-n">2</span>
+                                <button class="qty-b">+</button>
+                            </div>
+                        </div>
+                        <div class="ci-pr">1,700 EGP</div>
                     </div>
 
-                    <div class="cart-empty" id="cart-empty-msg" style="display: none;">
-                        <p>Your cart is empty</p>
-                        <button class="btn-primary" onclick="goTo('products')">Continue Shopping</button>
+                    <!-- CART ITEM 2 -->
+                    <div class="cart-item-row">
+                        <div class="ci-img">
+                            <img src="../assets/images/Bag1.png" alt="Classic Leather Tote">
+                        </div>
+                        <div class="ci-inf">
+                            <div class="ci-name">Classic Leather Tote</div>
+                            <div class="ci-var">One Size · Black</div>
+                            <div class="ci-qty">
+                                <button class="qty-b">−</button>
+                                <span class="qty-n">1</span>
+                                <button class="qty-b">+</button>
+                            </div>
+                        </div>
+                        <div class="ci-pr">1,530 EGP</div>
+                    </div>
+
+                    <!-- CART ITEM 3 -->
+                    <div class="cart-item-row">
+                        <div class="ci-img">
+                            <img src="../assets/images/Clog1.png" alt="Suede Mule Clog">
+                        </div>
+                        <div class="ci-inf">
+                            <div class="ci-name">Suede Mule Clog</div>
+                            <div class="ci-var">Size: 39 · Taupe</div>
+                            <div class="ci-qty">
+                                <button class="qty-b">−</button>
+                                <span class="qty-n">1</span>
+                                <button class="qty-b">+</button>
+                            </div>
+                        </div>
+                        <div class="ci-pr">1,100 EGP</div>
                     </div>
                 </div>
 
-                <div class="cart-summary-section">
-                    <div class="cart-summary">
-                        <h2>Order Summary</h2>
-                        <div class="summary-row">
-                            <span>Subtotal:</span>
-                            <span id="subtotal">EGP 0.00</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Shipping:</span>
-                            <span id="shipping">EGP 0.00</span>
-                        </div>
-                        <div class="summary-row">
-                            <span>Tax:</span>
-                            <span id="tax">EGP 0.00</span>
-                        </div>
-                        <div class="summary-row total">
-                            <span>Total:</span>
-                            <span id="total">EGP 0.00</span>
-                        </div>
-                        <button class="btn-primary checkout-btn">Proceed to Checkout</button>
-                        <button class="btn-secondary" onclick="goTo('products')">Continue Shopping</button>
+                <!-- CART SUMMARY -->
+                <div class="cart-summary">
+                    <div class="cs-title">Order Summary</div>
+                    
+                    <div class="cs-row">
+                        <span>Subtotal</span>
+                        <span>4,330 EGP</span>
                     </div>
+                    
+                    <div class="cs-row">
+                        <span>Shipping</span>
+                        <span>70 EGP</span>
+                    </div>
+                    
+                    <div class="cs-row">
+                        <span>Tax (14%)</span>
+                        <span>646 EGP</span>
+                    </div>
+                    
+                    <div class="cs-row total">
+                        <span>Total</span>
+                        <span>5,046 EGP</span>
+                    </div>
+                    
+                    <p class="cs-note">✨ Free shipping on orders over 2,000 EGP</p>
+                    
+                    <button class="btn-primary" style="width: 100%; margin-bottom: 10px;">Proceed to Checkout 💕</button>
+                    <button class="btn-secondary" style="width: 100%;">Continue Shopping</button>
                 </div>
             </div>
         </div>
     </div>
-        <script src="../javascript/cart.js" defer></script>
-   </body>
+
+    <!-- Include animation JavaScript only -->
+    <script src="../javascript/all.js" defer></script>
+</body>
 </html>

@@ -1,0 +1,157 @@
+/* ════════════════════ SUPPORT ════════════════════ */
+.support-hero {
+    background: linear-gradient(135deg, var(--rose), var(--mauve));
+    padding: 52px 64px;
+    position: relative;
+    overflow: hidden
+}
+
+.support-hero::before {
+    content: '💕';
+    position: absolute;
+    right: 80px;
+    top: 20px;
+    font-size: 100px;
+    opacity: .12
+}
+
+.support-hero::after {
+    content: '🌸';
+    position: absolute;
+    left: 40px;
+    bottom: 10px;
+    font-size: 80px;
+    opacity: .1
+}
+
+.support-hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 40px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1
+}
+
+.support-hero-sub {
+    font-size: 15px;
+    color: rgba(255, 255, 255, .65);
+    font-weight: 300;
+    max-width: 480px;
+    position: relative;
+    z-index: 1
+}
+
+.support-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 44px 64px;
+    background: var(--white)
+}
+
+.sup-card {
+    background: linear-gradient(145deg, var(--blush), var(--blush2));
+    padding: 28px;
+    border: 1.5px solid var(--border);
+    border-radius: 18px;
+    transition: transform .25s, box-shadow .25s
+}
+
+.sup-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(232, 103, 138, .15)
+}
+
+.sup-icon {
+    font-size: 30px;
+    margin-bottom: 14px
+}
+
+.sup-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 8px
+}
+
+.sup-txt {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    margin-bottom: 14px
+}
+
+.sup-lbl {
+    font-size: 9px;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px
+}
+
+.sup-contact {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--rose-d)
+}
+
+.faq-section {
+    padding: 44px 64px
+}
+
+.faq-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 22px;
+    color: var(--dark)
+}
+
+.faq-item {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    cursor: none
+}
+
+.faq-q {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dark);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color .2s
+}
+
+.faq-q:hover {
+    color: var(--rose)
+}
+
+.faq-arrow {
+    font-size: 16px;
+    color: var(--rose);
+    transition: transform .25s
+}
+
+.faq-item.open .faq-arrow {
+    transform: rotate(180deg)
+}
+
+.faq-a {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s, margin-top .3s
+}
+
+.faq-item.open .faq-a {
+    max-height: 200px;
+    margin-top: 10px
+}

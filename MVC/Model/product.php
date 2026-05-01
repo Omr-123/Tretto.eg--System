@@ -2,14 +2,15 @@
 require_once('../../db.php');
 
 class Product {
-    public $prod_ID;
+    public $pid;
     public $name;
-    public $description;
     public $price;
-    public $stock;
-    public $category;
+    public $stockquantity;
+    public $description;
+    public $color;
     public $image;
-    public $storeID;
-    public $rating;
-
+    public $size;
+    public $number_of_selling;
+    
+    
 }

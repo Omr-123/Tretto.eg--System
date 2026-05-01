@@ -3,11 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="../css/all.css">
-        <title>Document</title>
+        <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/index.css">
+        <link rel="stylesheet" href="../css/navbar.css">
+        <title>Tretto</title>
     </head>
     <body>
-    <?php include 'navbar.php'; ?>
+    <?php include 'component/navbar.php'; ?>
         <div class="page" id="page-home">
             <div class="hero">
                 <div class="hero-l">
@@ -77,7 +79,7 @@
             <div class="home-sec">
                 <div class="home-sec-hd">
                     <div>
-                        <div class="sec-tag">✨ Recommended For You</div>
+                        <div class="    ">✨ Recommended For You</div>
                         <h2 class="sec-title">Trending & <em>Loved</em></h2>
                     </div>
                     <a class="view-all" onclick="goTo('products')">View all</a>

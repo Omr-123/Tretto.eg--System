@@ -36,7 +36,7 @@
             background: var(--blush);
             color: var(--dark);
             overflow-x: hidden;
-            cursor: none;
+            /* cursor: none; */
             min-height: 100vh
         }
 
@@ -120,7 +120,7 @@
             font-weight: 700;
             color: var(--dark);
             text-decoration: none;
-            cursor: none;
+            /* cursor: none; */
             display: flex;
             align-items: center;
             gap: 4px;
@@ -163,7 +163,7 @@
             color: var(--mid);
             text-decoration: none;
             transition: color .2s;
-            cursor: none;
+            /* cursor: none; */         
             position: relative;
             padding-bottom: 3px
         }
@@ -199,7 +199,7 @@
         .nav-icon {
             background: none;
             border: none;
-            cursor: none;
+            /* cursor: none; */
             font-size: 16px;
             color: var(--mid);
             padding: 4px;
@@ -235,7 +235,7 @@
             font-size: 12px;
             font-weight: 700;
             letter-spacing: .07em;
-            cursor: none;
+            /* cursor: none; */
             font-family: 'DM Sans', sans-serif;
             transition: all .2s;
             border-radius: 20px
@@ -282,7 +282,7 @@
             font-weight: 700;
             letter-spacing: .1em;
             text-transform: uppercase;
-            cursor: none;
+            /* cursor: none; */
             font-family: 'DM Sans', sans-serif;
             transition: all .22s;
             border-radius: 24px;
@@ -303,7 +303,7 @@
             font-weight: 700;
             letter-spacing: .07em;
             text-transform: uppercase;
-            cursor: none;
+            /* cursor: none; */
             font-family: 'DM Sans', sans-serif;
             transition: all .2s;
             border-radius: 24px
@@ -320,7 +320,7 @@
             font-weight: 700;
             letter-spacing: .06em;
             color: var(--muted);
-            cursor: none;
+            /* cursor: none; */         
             transition: color .2s;
             display: flex;
             align-items: center;
@@ -517,7 +517,7 @@
         }
 
         #page-register.active,
-        #page-login.active {
+        #`-login.active {
             display: flex
         }
 
@@ -635,7 +635,7 @@
         .auth-switch a {
             color: var(--rose);
             font-weight: 700;
-            cursor: none;
+            /* cursor: none; */         
             text-decoration: none
         }
 
@@ -945,7 +945,7 @@
             letter-spacing: .1em;
             text-transform: uppercase;
             color: var(--muted);
-            cursor: none;
+            /* cursor: none; */
             text-decoration: none;
             display: flex;
             align-items: center;
@@ -974,7 +974,7 @@
         }
 
         .prod-card {
-            cursor: none;
+            /* cursor: none; */
             transition: transform .28s
         }
 
@@ -1056,7 +1056,7 @@
             font-size: 9px;
             letter-spacing: .1em;
             text-transform: uppercase;
-            cursor: none;
+            /* cursor: none; */
             font-family: 'DM Sans', sans-serif;
             font-weight: 700;
             transition: opacity .18s;
@@ -1072,7 +1072,7 @@
             background: rgba(255, 255, 255, .85);
             border: none;
             color: var(--rose);
-            cursor: none;
+            /* cursor: none; */
             font-size: 14px;
             transition: all .18s;
             border-radius: 50%
@@ -1164,7 +1164,7 @@
         .coll-card {
             position: relative;
             overflow: hidden;
-            cursor: none;
+            /* cursor: none; */
             aspect-ratio: .88;
             display: flex;
             flex-direction: column;
@@ -1278,7 +1278,7 @@
             font-weight: 700;
             letter-spacing: .1em;
             text-transform: uppercase;
-            cursor: none;
+            /* cursor: none; */
             font-family: 'DM Sans', sans-serif;
             border-radius: 12px
         }
@@ -1307,7 +1307,7 @@
             color: var(--mid);
             font-size: 12px;
             font-weight: 500;
-            cursor: none;
+            #cursor: none;
             font-family: 'DM Sans', sans-serif;
             transition: all .18s;
             border-radius: 20px
@@ -1327,7 +1327,7 @@
             color: var(--mid);
             font-size: 12px;
             font-weight: 500;
-            cursor: none;
+            #cursor: none;
             font-family: 'DM Sans', sans-serif;
             outline: none;
             margin-left: auto;
@@ -1372,7 +1372,7 @@
         .pd-thumb {
             width: 72px;
             height: 88px;
-            cursor: none;
+            #cursor: none;
             opacity: .5;
             transition: opacity .2s;
             border: 2px solid transparent;
@@ -1479,7 +1479,7 @@
             background: var(--white);
             font-size: 13px;
             font-weight: 500;
-            cursor: none;
+            #cursor: none;
             transition: all .18s;
             display: flex;
             align-items: center;
@@ -1511,7 +1511,7 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            cursor: none;
+            #cursor: none;
             border: 2px solid transparent;
             transition: border-color .18s;
             box-shadow: 0 2px 6px rgba(0, 0, 0, .12)
@@ -1544,7 +1544,7 @@
             border: 1.5px solid var(--border);
             background: var(--white);
             font-size: 20px;
-            cursor: none;
+            #cursor: none;
             transition: all .2s;
             border-radius: 50%
         }
@@ -1618,7 +1618,7 @@
             height: 28px;
             border: 1.5px solid var(--border);
             background: var(--white);
-            cursor: none;
+            #cursor: none;
             font-size: 14px;
             color: var(--mid);
             display: flex;
@@ -1803,7 +1803,7 @@
         .pay-method {
             border: 2px solid var(--border);
             padding: 20px;
-            cursor: none;
+            /* cursor: none; */
             transition: all .2s;
             border-radius: 16px;
             position: relative
@@ -2235,7 +2235,7 @@
 
         .star-btn {
             font-size: 30px;
-            cursor: none;
+            /* cursor: none; */
             color: var(--border);
             transition: color .15s;
             background: none;
@@ -2688,7 +2688,7 @@
             border: none;
             font-size: 11px;
             font-weight: 700;
-            cursor: none;
+            /* cursor: none; */
             font-family: 'DM Sans', sans-serif;
             border-radius: 0 12px 12px 0
         }
