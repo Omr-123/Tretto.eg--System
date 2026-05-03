@@ -4,11 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="stylesheet" href="../css/main.css">
+        <link rel="stylesheet" href="../css/product-detail.css">
+        <link rel="stylesheet" href="../css/navbar.css">
     <title>Document</title>
 </head>
 <body>
 
-<?php include 'navbar.php'; ?>
+<?php include 'component/navbar.php'; ?>
 
     <div class="page" id="page-product-detail">
         <div class="page-wrap">
