@@ -1,0 +1,80 @@
+ .coll-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px
+        }
+
+        .coll-card {
+            position: relative;
+            overflow: hidden;
+            cursor: none;
+            aspect-ratio: .88;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 24px;
+            transition: transform .3s;
+            border-radius: 20px
+        }
+
+        .coll-card:hover {
+            transform: scale(1.02)
+        }
+
+        .coll-card:hover .coll-bg {
+            transform: scale(1.06)
+        }
+
+        .coll-bg {
+            position: absolute;
+            inset: 0;
+            transition: transform .5s;
+            border-radius: 20px
+        }
+
+        .cg1 {
+            background: linear-gradient(145deg, #E8A0BB, #C44A6D)
+        }
+
+        .cg2 {
+            background: linear-gradient(145deg, #DDB8D0, #AA5A8A)
+        }
+
+        .cg3 {
+            background: linear-gradient(145deg, #F2C4D0, #D47A9E)
+        }
+
+        .coll-ov {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent 30%, rgba(45, 27, 37, .6)100%);
+            border-radius: 20px
+        }
+
+        .coll-cnt {
+            position: relative;
+            z-index: 2
+        }
+
+        .coll-tag {
+            font-size: 9px;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, .6);
+            margin-bottom: 6px;
+            font-weight: 700
+        }
+
+        .coll-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+            line-height: 1.1
+        }
+
+        .coll-count {
+            font-size: 10px;
+            color: rgba(255, 255, 255, .5)
+        }
