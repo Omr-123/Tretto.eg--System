@@ -1,8 +1,18 @@
+<?php
+require_once __DIR__ . '/../../Controller/cart_Controller.php';
+require_once __DIR__ . '/../../Model/cart.php';
+require_once __DIR__ . '/../../../db.php';
+$cartController = new Cart_Controller();
+$user_id = 1; // This should be dynamically set based on the logged-in user
+$cart_items = $cartController->get_cart_items($user_id);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/cart.css">
@@ -12,10 +22,10 @@
 <body>
     <?php include 'component/navbar.php'; ?>
     
-    <div class="page" id="page-cart">
+   <div class="page" id="page-cart">
         <div class="page-header">
-            <div class="sec-tag">🛒 Your Cart</div>
-            <h1 class="sec-title">Shopping <em>Bag</em></h1>
+            <div class="sec-tag">🛍 Shopping</div>
+            <h1 class="sec-title">Your <em>Cart</em></h1>
         </div>
         
         <div class="page-wrap">
@@ -23,22 +33,23 @@
                 <!-- CART ITEMS -->
                 <div>
                     <!-- CART ITEM 1 -->
+                    <?php foreach ($cart_items as $item): ?>
                     <div class="cart-item-row">
                         <div class="ci-img">
                             <img src="../assets/images/Slipper1.png" alt="Denim Slide Sandal">
                         </div>
                         <div class="ci-inf">
-                            <div class="ci-name">Denim Slide Sandal</div>
+                            <div class="ci-name">1</div>
                             <div class="ci-var">Size: 38 · Denim Blue</div>
                             <div class="ci-qty">
-                                <button class="qty-b">−</button>
-                                <span class="qty-n">2</span>
-                                <button class="qty-b">+</button>
+                                <button class="qty-b" >-</button>
+                                <span class="qty-n">3</span>
+                                <button class="qty-b" >+</button>
                             </div>
                         </div>
-                        <div class="ci-pr">1,700 EGP</div>
+                        <div class="ci-pr"><?= $item->total_amount ?> EGP</div>
                     </div>
-
+                    <?php endforeach; ?>
                     <!-- CART ITEM 2 -->
                     <div class="cart-item-row">
                         <div class="ci-img">
@@ -108,6 +119,8 @@
     </div>
 
     <!-- Include animation JavaScript only -->
+    <?php include 'component/footer.php'; ?>
+
     <script src="../javascript/all.js" defer></script>
 </body>
 </html>

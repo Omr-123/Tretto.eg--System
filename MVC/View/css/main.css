@@ -92,6 +92,7 @@
                 opacity: 0
             }
         }
+        
 /* ── PAGES ── */
         .page {
             padding-top: 68px;
@@ -236,6 +237,67 @@
 
         .error-msg.show {
             display: block
+        }
+ .sec-tag {
+            font-size: 10px;
+            letter-spacing: .2em;
+            text-transform: uppercase;
+            color: var(--rose);
+            margin-bottom: 10px;
+            font-weight: 700
+        }
+
+        .sec-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(28px, 3vw, 44px);
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--dark)
+        }
+
+        .sec-title em {
+            font-style: italic;
+            color: var(--rose)
+        }
+
+        .page-header {
+            padding: 52px 64px 32px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--blush) 0%, var(--blush2) 100%)
+        }
+
+        .page-wrap {
+            padding: 40px 64px 80px
+        }
+
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(70px);
+            background: var(--dark);
+            color: #fff;
+            padding: 12px 24px;
+            font-size: 12px;
+            font-weight: 500;
+            z-index: 9001;
+            transition: transform .4s cubic-bezier(.34, 1.56, .64, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(45, 27, 37, .25);
+            border: 1px solid rgba(232, 103, 138, .3)
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0)
+        }
+
+        .t-ico {
+            color: var(--rose-l)
         }
 
     

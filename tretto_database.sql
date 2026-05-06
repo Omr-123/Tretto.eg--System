@@ -303,4 +303,9 @@ CREATE INDEX idx_payment_orderID ON Payment(order_ID);
 -- ================================================
 INSERT into cart (userID, prod_ID, quantity, addedDate) VALUES (1, 1, 2, CURRENT_TIMESTAMP());
 INSERT into product(prod_ID, name, description, price, stock, category, image) VALUES
-            ( 1, 'Denim Slide Sandal', 'A chic denim slide sandal with gold-tone buckles and playful sequin details. Distressed fabric with a cork-inspired sole for all-day comfort.', 850, 10, 'slippers', '../assets/images/Slipper1.png');
+            ( 1, 'Denim Slide Sandal', 'A chic denim slide sandal with gold-tone buckles and playful sequin details. Distressed fabric with a cork-inspired sole for all-day comfort.', 850, 10, 'slippers', '../assets/images/Slipper1.png'),
+            (2, 'Leather Tote Bag', 'A spacious leather tote bag with a minimalist design, perfect for everyday use. Features sturdy handles and a secure zip closure.', 1200, 15, 'bags', '../assets/images/Bag1.png'),
+            (3, 'Classic Clogs', 'Traditional wooden clogs with a modern twist. Comfortable and stylish, ideal for both indoor and outdoor wear.', 950, 20, 'clogs', '../assets/images/Clog1.png'),
+            (4, 'Embroidered Slippers', 'Soft fabric slippers adorned with intricate embroidery, offering a blend of comfort and elegance for indoor lounging.', 700, 25, 'slippers', '../assets/images/Slipper2.png'),
+            (5, 'Canvas Backpack', 'A durable canvas backpack with multiple compartments, perfect for students and travelers. Features adjustable straps and a padded back.', 900, 12, 'bags', '../assets/images/Bag2.png'),
+            (6, 'Platform Clogs', 'Stylish platform clogs with a chunky sole for added height and comfort. Made from high-quality materials for long-lasting wear.', 1100, 18, 'clogs', '../assets/images/Clog2.png');

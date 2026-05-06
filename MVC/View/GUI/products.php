@@ -1,3 +1,12 @@
+<?php
+
+require_once __DIR__ . '/../../Controller/products_controller.php';
+require_once __DIR__ . '/../../Model/product.php';
+require_once __DIR__ . '/../../../db.php';
+$list=new ProductsController();
+$products=$list->getAllProducts();
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,8 +22,8 @@
     <title>Products - Tretto.eg</title>
 </head>
 <body>
-    <?php include 'component/navbar.php'; ?>
     
+    <?php include 'component/navbar.php'; ?>
     <!-- PAGE 5: PRODUCT LISTING -->
     <div class="page" id="page-products">
         <div class="page-header">
@@ -45,169 +54,38 @@
             
             <!-- PRODUCT GRID - HARDCODED HTML -->
             <div class="prod-grid" id="prod-listing">
-                <!-- Row 1 -->
-                <div class="prod-card" data-category="slippers" data-product-id="1">
-                    <div class="prod-img-wrap">
-                        <img class="prod-photo" src="../assets/images/Slipper1.png" alt="Denim Slide Sandal">
-                        <span class="prod-bdg b-new">New 🌸</span>
-                        <div class="prod-ov">
-                            <button class="btn-atc">Add to Cart</button>
-                            <button class="btn-fav-sm">♡</button>
+                 <?php foreach($products as $product):?>
+                    <a href="product_detail.php?id=<?= $product->pid ?>">
+                        <div class="prod-card" data-category="bags" data-product-id="5">
+                            <div class="prod-img-wrap">
+                                <img class="prod-photo" src="<?= $product->image; ?>" alt="Pebble Leather Tote">
+                                <div class="prod-ov">
+                                    <button class="btn-atc">Add to Cart</button>
+                                    <button class="btn-fav-sm">♡</button>
+                                </div>
+                            </div>
+                            <div class="prod-info">
+                                <div class="prod-cat">Bags</div>
+                                <div class="prod-name">Pebble Leather Tote</div>
+                                <div class="prod-pr-row">
+                                    <span class="prod-price"><?= $product->price; ?> <span class="prod-egp">EGP</span></span>
+                                    <span class="prod-stars">★★★★☆</span>
+                                </div>
+                                <div class="stock-out">● Out of Stock</div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="prod-info">
-                        <div class="prod-cat">Slippers</div>
-                        <div class="prod-name">Denim Slide Sandal</div>
-                        <div class="prod-pr-row">
-                            <span class="prod-price">850 <span class="prod-egp">EGP</span></span>
-                            <span class="prod-stars">★★★★★</span>
-                        </div>
-                        <div class="stock-in">● In Stock</div>
-                    </div>
-                </div>
+                    </a>
+                <?php endforeach; ?>
+                
 
-                <div class="prod-card" data-category="bags" data-product-id="2">
-                    <div class="prod-img-wrap">
-                        <img class="prod-photo" src="../assets/images/bag1.jpeg" alt="Classic Leather Tote">
-                        <span class="prod-bdg b-sale">Sale 🏷</span>
-                        <div class="prod-ov">
-                            <button class="btn-atc">Add to Cart</button>
-                            <button class="btn-fav-sm">♡</button>
-                        </div>
-                    </div>
-                    <div class="prod-info">
-                        <div class="prod-cat">Bags</div>
-                        <div class="prod-name">Classic Leather Tote</div>
-                        <div class="prod-pr-row">
-                            <span class="prod-price">1,530 <span class="prod-egp">EGP</span></span>
-                            <span class="prod-old">1,800</span>
-                            <span class="prod-stars">★★★★★</span>
-                        </div>
-                        <div class="stock-in">● In Stock</div>
-                    </div>
-                </div>
-
-                <div class="prod-card" data-category="clogs" data-product-id="3">
-                    <div class="prod-img-wrap">
-                        <img class="prod-photo" src="../assets/images/Clog1.png" alt="Suede Mule Clog">
-                        <span class="prod-bdg b-sale">Sale 🏷</span>
-                        <div class="prod-ov">
-                            <button class="btn-atc">Add to Cart</button>
-                            <button class="btn-fav-sm">♡</button>
-                        </div>
-                    </div>
-                    <div class="prod-info">
-                        <div class="prod-cat">Clogs</div>
-                        <div class="prod-name">Suede Mule Clog</div>
-                        <div class="prod-pr-row">
-                            <span class="prod-price">1,100 <span class="prod-egp">EGP</span></span>
-                            <span class="prod-stars">★★★★☆</span>
-                        </div>
-                        <div class="stock-in">● In Stock</div>
-                    </div>
-                </div>
-
-                <div class="prod-card" data-category="slippers" data-product-id="4">
-                    <div class="prod-img-wrap">
-                        <img class="prod-photo" src="../assets/images/Slipper2.png" alt="Denim Buckle Slide">
-                        <div class="prod-ov">
-                            <button class="btn-atc">Add to Cart</button>
-                            <button class="btn-fav-sm">♡</button>
-                        </div>
-                    </div>
-                    <div class="prod-info">
-                        <div class="prod-cat">Slippers</div>
-                        <div class="prod-name">Denim Buckle Slide</div>
-                        <div class="prod-pr-row">
-                            <span class="prod-price">920 <span class="prod-egp">EGP</span></span>
-                            <span class="prod-stars">★★★★★</span>
-                        </div>
-                        <div class="stock-in">● In Stock</div>
-                    </div>
-                </div>
-
-                <!-- Row 2 -->
-                <div class="prod-card" data-category="bags" data-product-id="5">
-                    <div class="prod-img-wrap">
-                        <img class="prod-photo" src="../assets/images/Bag2.png" alt="Pebble Leather Tote">
-                        <div class="prod-ov">
-                            <button class="btn-atc">Add to Cart</button>
-                            <button class="btn-fav-sm">♡</button>
-                        </div>
-                    </div>
-                    <div class="prod-info">
-                        <div class="prod-cat">Bags</div>
-                        <div class="prod-name">Pebble Leather Tote</div>
-                        <div class="prod-pr-row">
-                            <span class="prod-price">1,620 <span class="prod-egp">EGP</span></span>
-                            <span class="prod-stars">★★★★☆</span>
-                        </div>
-                        <div class="stock-out">● Out of Stock</div>
-                    </div>
-                </div>
-
-                <div class="prod-card" data-category="clogs" data-product-id="6">
-                    <div class="prod-img-wrap">
-                        <img class="prod-photo" src="../assets/images/Clog2.png" alt="Mule Clog Taupe">
-                        <div class="prod-ov">
-                            <button class="btn-atc">Add to Cart</button>
-                            <button class="btn-fav-sm">♡</button>
-                        </div>
-                    </div>
-                    <div class="prod-info">
-                        <div class="prod-cat">Clogs</div>
-                        <div class="prod-name">Mule Clog Taupe</div>
-                        <div class="prod-pr-row">
-                            <span class="prod-price">980 <span class="prod-egp">EGP</span></span>
-                            <span class="prod-stars">★★★★★</span>
-                        </div>
-                        <div class="stock-in">● In Stock</div>
-                    </div>
-                </div>
-
-                <div class="prod-card" data-category="slippers" data-product-id="7">
-                    <div class="prod-img-wrap">
-                        <img class="prod-photo" src="../assets/images/Slipper3.png" alt="Canvas Clog">
-                        <span class="prod-bdg b-new">New 🌸</span>
-                        <div class="prod-ov">
-                            <button class="btn-atc">Add to Cart</button>
-                            <button class="btn-fav-sm">♡</button>
-                        </div>
-                    </div>
-                    <div class="prod-info">
-                        <div class="prod-cat">Slippers</div>
-                        <div class="prod-name">Canvas Clog</div>
-                        <div class="prod-pr-row">
-                            <span class="prod-price">750 <span class="prod-egp">EGP</span></span>
-                            <span class="prod-stars">★★★★☆</span>
-                        </div>
-                        <div class="stock-in">● In Stock</div>
-                    </div>
-                </div>
-
-                <div class="prod-card" data-category="bags" data-product-id="8">
-                    <div class="prod-img-wrap">
-                        <img class="prod-photo" src="../assets/images/Bag3.png" alt="Woven Crossbody">
-                        <div class="prod-ov">
-                            <button class="btn-atc">Add to Cart</button>
-                            <button class="btn-fav-sm">♡</button>
-                        </div>
-                    </div>
-                    <div class="prod-info">
-                        <div class="prod-cat">Bags</div>
-                        <div class="prod-name">Woven Crossbody</div>
-                        <div class="prod-pr-row">
-                            <span class="prod-price">1,250 <span class="prod-egp">EGP</span></span>
-                            <span class="prod-stars">★★★★★</span>
-                        </div>
-                        <div class="stock-in">● In Stock</div>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>
 
     <!-- Include footer if needed -->
+        <?php include 'component/footer.php'; ?>
+
     <script src="../javascript/all.js" defer></script>
 </body>
 </html>
