@@ -3,8 +3,23 @@
 require_once __DIR__ . '/../../Controller/products_controller.php';
 require_once __DIR__ . '/../../Model/product.php';
 require_once __DIR__ . '/../../../db.php';
-$list=new ProductsController();
-$products=$list->getAllProducts();
+
+$user_id = 1;
+$list = new ProductsController();
+
+if (isset($_GET['add_to_cart'])) {
+    $list->addToCart((int)$_GET['add_to_cart'], $user_id);
+}
+
+if (isset($_GET['add_to_fav'])) {
+    $list->addToFav((int)$_GET['add_to_fav'], $user_id);
+}
+
+if (isset($_GET['sort']) && $_GET['sort'] !== '') {
+    $products = $list->getFilter($_GET['sort']);
+} else {
+    $products = $list->getAllProducts();
+}
 ?>
 
 <!DOCTYPE html>
@@ -44,12 +59,14 @@ $products=$list->getAllProducts();
                 <button class="chip" data-filter="bags">Bags</button>
                 <button class="chip" data-filter="new">New Arrivals</button>
                 <button class="chip" data-filter="sale">On Sale 🏷</button>
-                <select class="sort-sel">
-                    <option value="newest">Sort: Newest</option>
-                    <option value="price-asc">Price: Low → High</option>
-                    <option value="price-desc">Price: High → Low</option>
-                    <option value="popular">Best Selling</option>
-                </select>
+                <form id="filterForm" method="GET" action="products.php">
+                    <select class="sort-sel" onchange="this.form.submit()" name="sort">
+                        <option value="newest" selected="window">Sort: Newest</option>
+                        <option value="price-asc">Price: Low → High</option>
+                        <option value="price-desc">Price: High → Low</option>
+                        <option value="popular">Best Selling</option>
+                    </select>
+                </form>
             </div>
             
             <!-- PRODUCT GRID - HARDCODED HTML -->
@@ -58,16 +75,25 @@ $products=$list->getAllProducts();
                     <a href="product_detail.php?id=<?= $product->pid ?>">
                         <div class="prod-card" data-category="bags" data-product-id="5">
                             <div class="prod-img-wrap">
-                                <img class="prod-photo" src="<?= $product->image; ?>" alt="Pebble Leather Tote">
+                                <img class="prod-photo" src="<?= $product->image; ?>" alt="<?= $product->name; ?>">
                                 <div class="prod-ov">
-                                    <button class="btn-atc">Add to Cart</button>
-                                    <button class="btn-fav-sm">♡</button>
+                                    <form method="GET" action="products.php" class="prod-action-form">
+                                        <input type="hidden" name="add_to_cart" value="<?= $product->pid ?>">
+                                        <button class="btn-primary" type="submit">Add to Cart</button>
+                                       
+                                    </form>
+                                    <form method="GET" action="products.php" class="prod-action-form">
+                                        <input type="hidden" name="add_to_fav" value="<?= $product->pid ?>">
+                                        <button class="btn-fav-lg" type="submit">♡</button>
+                                    </form>
                                 </div>
                             </div>
                             <div class="prod-info">
-                                <div class="prod-cat">Bags</div>
-                                <div class="prod-name">Pebble Leather Tote</div>
+                                <div class="prod-cat"><?= $product->category; ?></div>
+                                <div class="prod-name"><?= $product->name; ?></div>
+                                
                                 <div class="prod-pr-row">
+
                                     <span class="prod-price"><?= $product->price; ?> <span class="prod-egp">EGP</span></span>
                                     <span class="prod-stars">★★★★☆</span>
                                 </div>
@@ -76,16 +102,12 @@ $products=$list->getAllProducts();
                         </div>
                     </a>
                 <?php endforeach; ?>
-                
-
-                
             </div>
         </div>
     </div>
 
     <!-- Include footer if needed -->
-        <?php include 'component/footer.php'; ?>
-
+    <?php include 'component/footer.php'; ?>
     <script src="../javascript/all.js" defer></script>
 </body>
 </html>

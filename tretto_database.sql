@@ -301,7 +301,13 @@ CREATE INDEX idx_payment_orderID ON Payment(order_ID);
 -- ================================================
 -- DATABASE SETUP COMPLETE
 -- ================================================
-INSERT into cart (userID, prod_ID, quantity, addedDate) VALUES (1, 1, 2, CURRENT_TIMESTAMP());
+INSERT into cart (userID, prod_ID, quantity, addedDate) VALUES 
+(1, 1, 2, CURRENT_TIMESTAMP()),
+(1, 2, 1, CURRENT_TIMESTAMP()),
+(2, 3, 1, CURRENT_TIMESTAMP()),
+(2, 4, 3, CURRENT_TIMESTAMP()),
+(3, 5, 1, CURRENT_TIMESTAMP()),
+(3, 6, 2, CURRENT_TIMESTAMP());
 INSERT into product(prod_ID, name, description, price, stock, category, image) VALUES
             ( 1, 'Denim Slide Sandal', 'A chic denim slide sandal with gold-tone buckles and playful sequin details. Distressed fabric with a cork-inspired sole for all-day comfort.', 850, 10, 'slippers', '../assets/images/Slipper1.png'),
             (2, 'Leather Tote Bag', 'A spacious leather tote bag with a minimalist design, perfect for everyday use. Features sturdy handles and a secure zip closure.', 1200, 15, 'bags', '../assets/images/Bag1.png'),

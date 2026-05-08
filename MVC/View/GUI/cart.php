@@ -1,10 +1,12 @@
 <?php
 require_once __DIR__ . '/../../Controller/cart_Controller.php';
 require_once __DIR__ . '/../../Model/cart.php';
+require_once __DIR__ . '/../../Model/product.php';
 require_once __DIR__ . '/../../../db.php';
 $cartController = new Cart_Controller();
 $user_id = 1; // This should be dynamically set based on the logged-in user
 $cart_items = $cartController->get_cart_items($user_id);
+$subtotal=$cartController->Subtotal($user_id);
 
 ?>
 <!DOCTYPE html>
@@ -32,11 +34,11 @@ $cart_items = $cartController->get_cart_items($user_id);
             <div class="cart-layout">
                 <!-- CART ITEMS -->
                 <div>
-                    <!-- CART ITEM 1 -->
                     <?php foreach ($cart_items as $item): ?>
+                    <!-- CART ITEM 1 -->
                     <div class="cart-item-row">
                         <div class="ci-img">
-                            <img src="../assets/images/Slipper1.png" alt="Denim Slide Sandal">
+                            <img src="<?= $item->image; ?>" alt="<?= $item->name; ?>">
                         </div>
                         <div class="ci-inf">
                             <div class="ci-name">1</div>
@@ -47,42 +49,10 @@ $cart_items = $cartController->get_cart_items($user_id);
                                 <button class="qty-b" >+</button>
                             </div>
                         </div>
-                        <div class="ci-pr"><?= $item->total_amount ?> EGP</div>
+                        <div class="ci-pr"><?= $item->price; ?> EGP</div>
                     </div>
                     <?php endforeach; ?>
-                    <!-- CART ITEM 2 -->
-                    <div class="cart-item-row">
-                        <div class="ci-img">
-                            <img src="../assets/images/Bag1.png" alt="Classic Leather Tote">
-                        </div>
-                        <div class="ci-inf">
-                            <div class="ci-name">Classic Leather Tote</div>
-                            <div class="ci-var">One Size · Black</div>
-                            <div class="ci-qty">
-                                <button class="qty-b">−</button>
-                                <span class="qty-n">1</span>
-                                <button class="qty-b">+</button>
-                            </div>
-                        </div>
-                        <div class="ci-pr">1,530 EGP</div>
-                    </div>
-
-                    <!-- CART ITEM 3 -->
-                    <div class="cart-item-row">
-                        <div class="ci-img">
-                            <img src="../assets/images/Clog1.png" alt="Suede Mule Clog">
-                        </div>
-                        <div class="ci-inf">
-                            <div class="ci-name">Suede Mule Clog</div>
-                            <div class="ci-var">Size: 39 · Taupe</div>
-                            <div class="ci-qty">
-                                <button class="qty-b">−</button>
-                                <span class="qty-n">1</span>
-                                <button class="qty-b">+</button>
-                            </div>
-                        </div>
-                        <div class="ci-pr">1,100 EGP</div>
-                    </div>
+                    
                 </div>
 
                 <!-- CART SUMMARY -->
@@ -91,7 +61,7 @@ $cart_items = $cartController->get_cart_items($user_id);
                     
                     <div class="cs-row">
                         <span>Subtotal</span>
-                        <span>4,330 EGP</span>
+                        <span><?= $subtotal;?> EGP</span>
                     </div>
                     
                     <div class="cs-row">
