@@ -116,9 +116,9 @@ CREATE TABLE IF NOT EXISTS Slipper (
 );
 
 -- ================================================
--- TABLE: Order
+-- TABLE: Orders
 -- ================================================
-CREATE TABLE IF NOT EXISTS `Order` (
+CREATE TABLE IF NOT EXISTS `Orders` (
     order_ID INT PRIMARY KEY AUTO_INCREMENT,
     userID INT NOT NULL,
     orderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -130,6 +130,14 @@ CREATE TABLE IF NOT EXISTS `Order` (
     FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS order_items (
+    item_ID INT PRIMARY KEY AUTO_INCREMENT,
+    order_ID INT NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
+    quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_ID) REFERENCES `Order`(order_ID) ON DELETE CASCADE
+);
 -- ================================================
 -- TABLE: Payment (Base Payment Table)
 -- ================================================
@@ -222,7 +230,25 @@ CREATE TABLE IF NOT EXISTS Cart (
     FOREIGN KEY (userID) REFERENCES User(userID) ON DELETE CASCADE,
     FOREIGN KEY (prod_ID) REFERENCES Product(prod_ID) ON DELETE CASCADE
 );
+-- ================================================
+-- TABLE: Cart item
+-- ================================================
+CREATE TABLE IF NOT EXISTS CartItems (
+    cartItem_ID INT PRIMARY KEY AUTO_INCREMENT,
+    cart_ID INT NOT NULL,
+    prod_ID INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
 
+    FOREIGN KEY (cart_ID) REFERENCES Cart(cart_ID)
+    ON DELETE CASCADE,
+
+    FOREIGN KEY (prod_ID) REFERENCES Product(prod_ID)
+    ON DELETE CASCADE,
+
+    UNIQUE(cart_ID, prod_ID),
+
+    CHECK(quantity > 0)
+);
 -- ================================================
 -- TABLE: Favorite
 -- ================================================
