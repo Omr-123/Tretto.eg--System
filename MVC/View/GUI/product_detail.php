@@ -1,10 +1,17 @@
 <?php
+session_start();
 require_once __DIR__ . '/../../Controller/products_controller.php';
 require_once __DIR__ . '/../../Model/product.php';
 require_once __DIR__ . '/../../../db.php';
 $id=$_GET['id'];
+$user_id = 1;
 $prod=new ProductsController();
 $product=$prod->getProductbyID($id);
+if (isset($_GET['add_to_cart'])) {
+    $prod->addToCart((int)$_GET['add_to_cart'], $user_id);
+}
+
+
 ?>
 <!-- PAGE 6: PRODUCT DETAIL -->
 <!DOCTYPE html>
@@ -19,7 +26,6 @@ $product=$prod->getProductbyID($id);
 </head>
 <body>
 
-<?php include 'component/navbar.php'; ?>
 
     <div class="page" id="page-product-detail">
         <div class="page-wrap">
@@ -68,13 +74,15 @@ $product=$prod->getProductbyID($id);
                         <div class="color-dot" style="background:#E8A0BB" title="Pink" onclick="selColor(this)"></div>
                     </div>
                     <div class="pd-stock stock-in" id="pd-stock">● In Stock — Ships within 2 business days</div>
-                    <div class="pd-actions" style="margin-top:20px">
-                        <button class="btn-primary" id="pd-add-cart" onclick="addCartFromDetail()">Add to Cart
-                            🛍</button>
-                        <button class="btn-fav-lg" id="pd-fav-btn" onclick="toggleFavDetail()">♡</button>
-                    </div>
-                    <div
-                        style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:20px">
+                    <form method="GET" action="products.php" class="prod-action-form">
+                        <input type="hidden" name="add_to_cart" value="<?= $id ?>">
+                            <div class="pd-actions" style="margin-top:20px">
+                                <button class="btn-primary" id="pd-add-cart" onclick="addCartFromDetail()">Add to Cart
+                                            🛍</button>
+                                        <button class="btn-fav-lg" id="pd-fav-btn" onclick="toggleFavDetail()">♡</button>
+                                </div>
+                        </form>
+                        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:20px">
                         <div style="font-size:12px;color:var(--muted)">🚚 Free delivery over 500 EGP</div>
                         <div style="font-size:12px;color:var(--muted)">🔄 14-day easy returns</div>
                     </div>

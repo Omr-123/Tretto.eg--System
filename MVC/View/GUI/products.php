@@ -1,10 +1,11 @@
 <?php
-
+session_start();
 require_once __DIR__ . '/../../Controller/products_controller.php';
 require_once __DIR__ . '/../../Model/product.php';
 require_once __DIR__ . '/../../../db.php';
 
 $user_id = 1;
+$_SESSION['user_id'] = $user_id;
 $list = new ProductsController();
 
 if (isset($_GET['add_to_cart'])) {
