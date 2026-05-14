@@ -1,8 +1,20 @@
+<?php
+require_once __DIR__ . '/../../Controller/cart_Controller.php';
+require_once __DIR__ . '/../../Model/cart.php';
+require_once __DIR__ . '/../../Model/product.php';
+require_once __DIR__ . '/../../../db.php';
+$cartController = new Cart_Controller();
+$user_id = 1; // This should be dynamically set based on the logged-in user
+$cart_items = $cartController->get_cart_items($user_id);
+$subtotal=$cartController->Subtotal($user_id);
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <link rel="stylesheet" href="../css/main.css">
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/cart.css">
@@ -12,66 +24,35 @@
 <body>
     <?php include 'component/navbar.php'; ?>
     
-    <div class="page" id="page-cart">
+   <div class="page" id="page-cart">
         <div class="page-header">
-            <div class="sec-tag">🛒 Your Cart</div>
-            <h1 class="sec-title">Shopping <em>Bag</em></h1>
+            <div class="sec-tag">🛍 Shopping</div>
+            <h1 class="sec-title">Your <em>Cart</em></h1>
         </div>
         
         <div class="page-wrap">
             <div class="cart-layout">
                 <!-- CART ITEMS -->
                 <div>
+                    <?php foreach ($cart_items as $item): ?>
                     <!-- CART ITEM 1 -->
                     <div class="cart-item-row">
                         <div class="ci-img">
-                            <img src="../assets/images/Slipper1.png" alt="Denim Slide Sandal">
+                            <img src="<?= $item->image; ?>" alt="<?= $item->name; ?>">
                         </div>
                         <div class="ci-inf">
-                            <div class="ci-name">Denim Slide Sandal</div>
+                            <div class="ci-name">1</div>
                             <div class="ci-var">Size: 38 · Denim Blue</div>
                             <div class="ci-qty">
-                                <button class="qty-b">−</button>
-                                <span class="qty-n">2</span>
-                                <button class="qty-b">+</button>
+                                <button class="qty-b" >-</button>
+                                <span class="qty-n">3</span>
+                                <button class="qty-b" >+</button>
                             </div>
                         </div>
-                        <div class="ci-pr">1,700 EGP</div>
+                        <div class="ci-pr"><?= $item->price; ?> EGP</div>
                     </div>
-
-                    <!-- CART ITEM 2 -->
-                    <div class="cart-item-row">
-                        <div class="ci-img">
-                            <img src="../assets/images/Bag1.png" alt="Classic Leather Tote">
-                        </div>
-                        <div class="ci-inf">
-                            <div class="ci-name">Classic Leather Tote</div>
-                            <div class="ci-var">One Size · Black</div>
-                            <div class="ci-qty">
-                                <button class="qty-b">−</button>
-                                <span class="qty-n">1</span>
-                                <button class="qty-b">+</button>
-                            </div>
-                        </div>
-                        <div class="ci-pr">1,530 EGP</div>
-                    </div>
-
-                    <!-- CART ITEM 3 -->
-                    <div class="cart-item-row">
-                        <div class="ci-img">
-                            <img src="../assets/images/Clog1.png" alt="Suede Mule Clog">
-                        </div>
-                        <div class="ci-inf">
-                            <div class="ci-name">Suede Mule Clog</div>
-                            <div class="ci-var">Size: 39 · Taupe</div>
-                            <div class="ci-qty">
-                                <button class="qty-b">−</button>
-                                <span class="qty-n">1</span>
-                                <button class="qty-b">+</button>
-                            </div>
-                        </div>
-                        <div class="ci-pr">1,100 EGP</div>
-                    </div>
+                    <?php endforeach; ?>
+                    
                 </div>
 
                 <!-- CART SUMMARY -->
@@ -80,7 +61,7 @@
                     
                     <div class="cs-row">
                         <span>Subtotal</span>
-                        <span>4,330 EGP</span>
+                        <span><?= $subtotal;?> EGP</span>
                     </div>
                     
                     <div class="cs-row">
@@ -108,6 +89,8 @@
     </div>
 
     <!-- Include animation JavaScript only -->
+    <?php include 'component/footer.php'; ?>
+
     <script src="../javascript/all.js" defer></script>
 </body>
 </html>

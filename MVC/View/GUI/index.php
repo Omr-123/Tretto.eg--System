@@ -6,6 +6,7 @@
         <link rel="stylesheet" href="../css/main.css">
         <link rel="stylesheet" href="../css/navbar.css">
         <link rel="stylesheet" href="../css/index.css">
+        <link rel="stylesheet" href="../css/product.css">
         <title>Tretto</title>
     </head>
     <body>
@@ -18,8 +19,8 @@
                     <h1 class="hero-h1">Egyptian <em>Craft</em>,<br>Feminine Style 🌸</h1>
                     <p class="hero-sub">Handcrafted clogs, slippers & bags — made with love, delivering to all of Egypt.</p>
                     <div class="hero-cta">
-                        <button class="btn-primary" onclick="goTo('products')">Shop Now 💕</button>
-                        <button class="btn-ghost" onclick="goTo('products')">Browse Collections →</button>
+                        <button class="btn-primary" onclick="window.location.href='products.php'">Shop Now 💕</button>
+                        <button class="btn-ghost" onclick="window.location.href='collections.php'">Browse Collections →</button>
                     </div>
                     <div class="hero-trust">
                         <div class="trust-item"><span class="trust-num">500+</span><span class="trust-lbl">Products</span>
@@ -191,6 +192,6 @@
             </div>
         </div>
             <script src="../javascript/all.js" defer></script>
-
+        <?php include 'component/footer.php'; ?>
     </body>
 </html>
