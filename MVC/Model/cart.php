@@ -1,18 +1,17 @@
 <?php
+require_once(__DIR__ . '/../../db.php');
 
+require_once(__DIR__ . '/users.php');
 
-class Cart {
+class cart {
     public $cartID;
-    public $userID;
-    public $quantity;
-    public $total_amount;
-    public $product_ID;
-    public $itemlist = [];
-     public function __construct($cartID, $userID,  $product_ID,$quantity) {
-        $this->cartID = $cartID;
-        $this->userID = $userID;
-        $this->product_ID = $product_ID;
-        $this->quantity = $quantity;
+    public $ID;
+    public $total;
+     public function __construct($data) {
+        $this->cartID = $data['cartID'] ?? null;
+        $this->ID = $data['userID'] ?? null;
+        $this->total = $data['total_amount'] ?? null;
+        
     }
  
    

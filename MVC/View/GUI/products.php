@@ -2,10 +2,13 @@
 session_start();
 require_once __DIR__ . '/../../Controller/products_controller.php';
 require_once __DIR__ . '/../../Model/product.php';
+require_once __DIR__ . '/../../Model/ProductFactory.php';
+require_once __DIR__ . '/../../Model/cart.php';
+require_once __DIR__ . '/../../Model/Collection.php';
 require_once __DIR__ . '/../../../db.php';
 
 $user_id = 1;
-$_SESSION['user_id'] = $user_id;
+
 $list = new ProductsController();
 
 if (isset($_GET['add_to_cart'])) {
@@ -76,7 +79,7 @@ if (isset($_GET['sort']) && $_GET['sort'] !== '') {
                     <a href="product_detail.php?id=<?= $product->pid ?>">
                         <div class="prod-card" data-category="bags" data-product-id="5">
                             <div class="prod-img-wrap">
-                                <img class="prod-photo" src="<?= $product->image; ?>" alt="<?= $product->name; ?>">
+                                <img class="prod-photo" src="<?= $product->variants[0]->img_url[0]; ?>" alt="<?= $product->name; ?>">
                                 <div class="prod-ov">
                                     <form method="GET" action="products.php" class="prod-action-form">
                                         <input type="hidden" name="add_to_cart" value="<?= $product->pid ?>">
@@ -97,8 +100,11 @@ if (isset($_GET['sort']) && $_GET['sort'] !== '') {
 
                                     <span class="prod-price"><?= $product->price; ?> <span class="prod-egp">EGP</span></span>
                                     <span class="prod-stars">★★★★☆</span>
-                                </div>
-                                <div class="stock-out">● Out of Stock</div>
+                                    </div>
+                                    <?php if( !isset($product->variants[0]->stock) || $product->variants[0]->stock <= 0): ?>
+                                            <div class="stock-out">● Out of Stock</div>
+                                    <?php endif;?>
+
                             </div>
                         </div>
                     </a>
