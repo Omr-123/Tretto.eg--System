@@ -1,13 +1,17 @@
 <?php
-require_once('../../db.php');
+class Location
+{
+    private $db;
 
-class StoreLocation {
-    public $storeID;
-    public $name;
-    public $address;
-    public $phone;
-    public $email;
-    public $city;
-    public $country;
+    public function __construct($conn)
+    {
+        $this->db = $conn;
+    }
 
+    public function getAllLocations()
+    {
+        $result = $this->db->query("SELECT * FROM StoreLocation");
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 }
+?>
