@@ -16,12 +16,18 @@ class Cart_Controller{
     }
 
     public function get_cart_items($user_id){
-        $query = "SELECT * FROM cart WHERE userID = :user_id";
+        $query = "SELECT * FROM cart WHERE ID = :user_id";
         $stmt = $this->cart_model->prepare($query);
         $stmt->bindParam(':user_id', $user_id);
         $stmt->execute();
         $cart=$stmt->fetchAll();
-        $cart_items = [];
+        
+        $query = "SELECT * FROM cart_items WHERE cartID = :cartID";
+        $stmt = $this->cart_model->prepare($query);
+        $stmt->bindParam(':cartID', $cart[0]['cartID']);
+        $stmt->execute();
+        
+        $cart = $stmt->fetchAll();
         $products=[];
         $prod=new ProductsController();
         foreach($cart as $cartt){
@@ -30,17 +36,17 @@ class Cart_Controller{
         }
         return $products;
     }
-    public function Subtotal($user_id){
-        $query="SELECT * FROM cart WHERE userID=:user_id";
+    public function Subtotal($cartID){
+        $query="SELECT * FROM cart_items WHERE cartID=:cartID";
         $stmt=$this->cart_model->prepare($query);
-        $stmt->bindParam(':user_id', $user_id);
+        $stmt->bindParam(':cartID', $cartID);
         $stmt->execute();
         $cart=$stmt->fetchAll();
         $prod=new ProductsController();
         $subtotal=0;
         foreach($cart as $cartt){
             $product=$prod->getProductbyID($cartt['prod_ID']);
-            $subtotal+=$product->price * $cartt['quantity'];
+            $subtotal+=($product->price+ $product->variants[$cartt['pvid']]->add_price )* $cartt['quantity'];
         }
         return $subtotal;
     }

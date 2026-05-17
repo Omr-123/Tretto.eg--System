@@ -1,10 +1,17 @@
 <?php
-require_once('../../db.php');
-require_once('user.php');
+require_once(__DIR__ . '/../../db.php');
 
-class Person extends User {
-    public $dateOfBirth;
-    public $gender;
-    public $address;
 
+class Person{
+    public $ID;
+    public $name;
+    public $email;
+    public $password;
+    
+    public function __construct($data) {
+        $this->ID = $data['ID'];
+        $this->name = $data['name'];
+        $this->email = $data['email'];
+        $this->password = $data['password'];
+    }
 }
