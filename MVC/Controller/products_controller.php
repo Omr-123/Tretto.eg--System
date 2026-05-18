@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . '/../Model/product.php';
 require_once __DIR__ . '/../Model/ProductFactory.php';
-require_once __DIR__ . '/../Model/product.php';
 require_once __DIR__ . '/../Model/cart.php';
 require_once __DIR__ . '/../Model/ProductFactory.php';
 require_once __DIR__ . '/../../db.php';
+require_once __DIR__ . '/cart_Controller.php';
 
 class ProductsController{
 private $conn;
@@ -26,19 +26,9 @@ private $conn;
     }
    
     public function addToCart($prod_ID, $pvid, $price, $user_id){
-        $query = "SELECT cartID FROM cart WHERE ID = :user_id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->execute();
-        $cartID = $stmt->fetch()['cartID'];
-
-        if (!$cartID) {
-            $query = "INSERT INTO cart (ID) VALUES (:user_id)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':user_id', $user_id);
-            $stmt->execute();
-            $cartID = $this->conn->lastInsertId();
-        }
+ 
+        $c=new Cart_Controller();
+        $cartID=$c->getUserCart($user_id);
         $query="SELECT * FROM cart_items WHERE cartID = :cartID AND PID = :prod_ID AND pvid = :pvid";
         $stmt=$this->conn->prepare($query);
         $stmt->bindParam(':cartID', $cartID);
@@ -71,11 +61,32 @@ private $conn;
         $stmt->execute();
 
         header("Location:cart.php");
-    }
-    public function addToFav($prod_id,$user_id){
+        }
 
-    }
-    public function getFilter($sortOrder){
+        public function addToFav($prod_id,$user_id,$pvid){
+        $query = "SELECT favID FROM favorite WHERE ID = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $stmt->execute();
+         $cartID = $stmt->fetch()['favID'];
+
+        if (!$cartID) {
+            $query = "INSERT INTO favorite (ID) VALUES (:user_id)";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+            $cartID = $this->conn->lastInsertId();
+        }
+        $query = "INSERT INTO favorite_items (favID, PID, pvid) VALUES (:favID, :PID, :pvid)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':favID', $cartID);
+        $stmt->bindParam(':PID', $prod_id);
+        $stmt->bindParam(':pvid', $pvid);
+        $stmt->execute();
+        header("Location:favorite.php");
+        
+        }
+        public function getFilter($sortOrder){
         $products = $this->getAllProducts();
         // 2. Check if a sort was requested
         $sortOrder = $_GET['sort'] ?? 'newest';
@@ -84,7 +95,7 @@ private $conn;
             case 'price-asc':
                 usort($products, fn($a, $b) => $a->price <=> $b->price);
                 break;
-
+                
             case 'price-desc':
                 usort($products, fn($a, $b) => $b->price <=> $a->price);
                 break;
@@ -111,6 +122,16 @@ private $conn;
         $query="SELECT * FROM product WHERE PID=:i";
         $stmt=$this->conn->prepare($query);
         $stmt->bindParam("i", $cartt['PID']);
+        $stmt->execute();
+        $row=$stmt->fetch();
+        $productFactory = new ProductFactory();
+    
+        return $productFactory->create($row['category'], $row) ?? null;
+    }
+    public function getProductbyID_Fav($fav){
+        $query="SELECT * FROM favorite_items WHERE PID=:i";
+        $stmt=$this->conn->prepare($query);
+        $stmt->bindParam("i", $fav['PID']);
         $stmt->execute();
         $row=$stmt->fetch();
         $productFactory = new ProductFactory();

@@ -1,19 +1,21 @@
 <?php
+require_once __DIR__ . '/../../../../db.php';
+require_once __DIR__ . '/../../../Controller/UserController.php';
 
 if (session_status() === PHP_SESSION_NONE)
     session_start();
 
 $isLoggedIn = !empty($_SESSION['logged_in']);
 $userName = $_SESSION['name'] ?? '';
-
+$Nav=new UserController();
+$numCart=0;
 // فاف counter
 $favCount = 0;
 if ($isLoggedIn) {
     require_once __DIR__ . '/../../../../db.php';
     $userID = intval($_SESSION['userID']);
-    $result = $conn->query("SELECT COUNT(*) AS cnt FROM favorites WHERE userID = $userID");
-    $row = $result->fetch_assoc();
-    $favCount = $row['cnt'] ?? 0;
+    $favCount = $Nav->Fav_Num($_SESSION['userID']);
+    $numCart=$Nav->cart_Number($_SESSION['userID']);
 }
 ?>
 
@@ -38,7 +40,7 @@ if ($isLoggedIn) {
 
         <a href="/Tretto.eg--System/MVC/View/GUI/cart.php" class="nav-icon">
             <span class="cart-icon-wrapper">🛒</span>
-            <span class="badge" id="cart-badge">0</span>
+            <span class="badge" id="cart-badge"><?= $numCart;?> </span>
         </a>
 
         <?php if ($isLoggedIn): ?>

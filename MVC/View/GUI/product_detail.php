@@ -21,9 +21,11 @@ $ct2=-1;
 $prod=new ProductsController();
 $product=$prod->getProductbyID($id);
 if (isset($_GET['add_to_cart'])) {
-    $prod->addToCart($product->pid,$i+1,$product->price, $user_id);
+    $prod->addToCart($_GET['add_to_cart'],$i+1,$product->price, $user_id);
 }
-
+if (isset($_GET['add_to_fav'])) {
+    $list->addToFav((int)$_GET['add_to_fav'], $user_id);
+}
 
 ?>
 <!-- PAGE 6: PRODUCT DETAIL -->
@@ -38,8 +40,8 @@ if (isset($_GET['add_to_cart'])) {
     <title><?= $product->name?></title>
 </head>
 <body>
-    <?php include 'component/navbar.php'; ?>
 
+    <?php include 'component/navbar.php'; ?>
 
     <div class="page" id="page-product-detail">
         <div class="page-wrap">
@@ -81,13 +83,12 @@ if (isset($_GET['add_to_cart'])) {
                     </div>
                     <div class="pd-attr-title">Colour</div>
                     <div class="color-grid" id="color-grid">
-                        <?php foreach($product->variants as $variant): $ct2=$ct2+1;
-                            if($variant->size== $product->variants[$Size_Active]->size): ?>
+                        <?php foreach($product->variants as $variant): $ct2=$ct2+1;?>
                             <a href="product_detail.php?id=<?= $product->pid ?>&Img_Active=<?= $Img_Active ?>&Size_Active=<?= $Size_Active ?> &Color_Active=<?= $ct2 ?>">
                                 <div class="color-dot<?=$ct2==$Color_Active ? 'sel' : '' ?>" style="background:<?= $variant->color ?>" title="<?= $variant->color ?>"
                                     onclick="selColor(this)"></div>
                                 </a>
-                        <?php endif; endforeach; ?>
+                        <?php endforeach; ?>
                     </div>
                     <?php if($product->variants[$Size_Active]->stock <= 0): ?>
                         <div class="pd-stock stock-out" id="pd-stock">● Out of Stock</div>
@@ -102,9 +103,9 @@ if (isset($_GET['add_to_cart'])) {
                             <button class="btn-fav-lg" id="pd-fav-btn" onclick="toggleFavDetail()">♡</button>
                         </div>
                     </form>
-                    <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:20px">
-                    <div style="font-size:12px;color:var(--muted)">🚚 Free delivery over 500 EGP</div>
-                    <div style="font-size:12px;color:var(--muted)">🔄 14-day easy returns</div>
+                        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:20px">
+                        <div style="font-size:12px;color:var(--muted)">🚚 Free delivery over 500 EGP</div>
+                        <div style="font-size:12px;color:var(--muted)">🔄 14-day easy returns</div>
                     </div>
                     <?php endif; ?>
                 </div>

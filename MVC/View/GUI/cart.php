@@ -1,10 +1,14 @@
 <?php
+session_start();
 require_once __DIR__ . '/../../Controller/cart_Controller.php';
 require_once __DIR__ . '/../../Model/cart.php';
 require_once __DIR__ . '/../../Model/product.php';
 require_once __DIR__ . '/../../../db.php';
 $cartController = new Cart_Controller();
-$user_id = 1; // This should be dynamically set based on the logged-in user
+if(!isset($_SESSION['userID'])){
+     header("Location:/Tretto.eg--System/MVC/View/GUI/login.php");
+}
+$user_id = $_SESSION['userID']; // This should be dynamically set based on the logged-in user
 if (isset($_GET['update_cart']) && isset($_GET['action'])) {
     $action = $_GET['action'];
     $prod_ID = (int)$_GET['PID'];
@@ -43,6 +47,7 @@ $ct=-1;
     <title>Shopping Cart - Tretto.eg</title>
 </head>
 <body>
+    <?php include 'component/navbar.php'; ?>
 
    <div class="page" id="page-cart">
         <div class="page-header">
@@ -58,7 +63,7 @@ $ct=-1;
                     <!-- CART ITEM 1 -->
                     <div class="cart-item-row">
                         <div class="ci-img">
-                            <img src="<?= $item->variants[$cart_info[$ct]['pvid']-1]->img_url[0]; ?>" alt="<?= $item->name; ?>">
+                            <img src="<?= $item->variants[0]->img_url[0]; ?>" alt="<?= $item->name; ?>">
                         </div>
                         <div class="ci-inf">
                             <div class="ci-name"><?= $item->name; ?></div>
@@ -93,17 +98,18 @@ $ct=-1;
                     
                     <div class="cs-row">
                         <span>Shipping</span>
+
                         <span>70 EGP</span>
                     </div>
                     
                     <div class="cs-row">
                         <span>Tax (14%)</span>
-                        <span>646 EGP</span>
+                        <span><?= $cartController->Subtotal($user_id) * 0.4;?> EGP</span>
                     </div>
                     
                     <div class="cs-row total">
                         <span>Total</span>
-                        <span>5,046 EGP</span>
+                        <span><?= $cartController->Subtotal($user_id)*1.4?>EGP</span>
                     </div>
                     
                     <p class="cs-note">✨ Free shipping on orders over 2,000 EGP</p>

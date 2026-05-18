@@ -17,11 +17,21 @@ class Cart_Controller{
 
     }
     public function getUserCart($user_id){
-        $query = "SELECT cartID FROM cart WHERE ID = :user_id";
+
+     $query = "SELECT cartID FROM cart WHERE ID = :user_id";
         $stmt = $this->cart_model->prepare($query);
         $stmt->bindParam(':user_id', $user_id);
         $stmt->execute();
-        return $stmt->fetch()['cartID'] ?? null;
+        $cartID = $stmt->fetch()['cartID'];
+
+        if (!$cartID) {
+            $query = "INSERT INTO cart (ID) VALUES (:user_id)";
+            $stmt = $this->cart_model->prepare($query);
+            $stmt->bindParam(':user_id', $user_id);
+            $stmt->execute();
+            $cartID = $this->cart_model->lastInsertId();
+        }
+        return $cartID;
     }
     public function get_cart_items($user_id){
         $cartID = $this->getUserCart($user_id);
@@ -92,6 +102,9 @@ class Cart_Controller{
             $subtotal += ($product->price + $add_price) * $cartt['quantity'];
         }
         return $subtotal;
+    }
+    public function GetTax($ID){
+        
     }
     public function add_to_cart($user_id, $prod_ID, $quantity){
         $cartID = $this->getUserCart($user_id);
