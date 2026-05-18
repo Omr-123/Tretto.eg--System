@@ -21,13 +21,29 @@ function h($v): string
 function admin_img_url(?string $image): string
 {
     $image = trim((string) $image);
-    if ($image === '')
-        return 'data:image/svg+xml;utf8,' . rawurlencode('<svg xmlns="http://www.w3.org/2000/svg" width="90" height="70"><rect width="100%" height="100%" fill="#fff0f3"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="#a07088" font-size="11">No Image</text></svg>');
-    if (preg_match('/^https?:\/\//i', $image) || str_starts_with($image, '/') || str_starts_with($image, '../'))
+
+    if ($image === '') {
+        return 'data:image/svg+xml;utf8,' . rawurlencode(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="90" height="70">
+                <rect width="100%" height="100%" fill="#fff0f3"/>
+                <text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" fill="#a07088" font-size="11">
+                    No Image
+                </text>
+            </svg>'
+        );
+    }
+
+    // If already correct path or external → DO NOTHING
+    if (
+        preg_match('/^https?:\/\//i', $image) ||
+        str_starts_with($image, '/') ||
+        str_starts_with($image, '../')
+    ) {
         return $image;
-    if (str_contains($image, 'assets/images/'))
-        return app_url('MVC/View/' . ltrim(substr($image, strpos($image, 'assets/images/')), '/'));
-    return app_url('MVC/View/assets/images/' . $image);
+    }
+
+    // ✅ ONLY add path, keep SAME filename
+    return '../../assets/images/' . $image;
 }
 
 function admin_header(string $title = 'Admin', string $active = ''): void
