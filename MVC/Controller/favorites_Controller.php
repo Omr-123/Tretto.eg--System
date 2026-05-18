@@ -21,12 +21,12 @@ if ($action === 'add') {
 }
 
 if ($action === 'remove') {
-    $userID = getSessionUserID();
-    $favoriteID = isset($_GET['id']) ? intval($_GET['id']) : 0;
+    $userID = $_GET['User'];
+    $favoriteID = isset($_GET['id']) ? $_GET['id'] : 0;
     if ($userID > 0 && $favoriteID > 0) {
         $favModel->removeFavorite($favoriteID);
     }
-    header("Location: ../View/GUI/favorites.php");
+    header("Location: ../View/GUI/favorite.php");
     exit;
 }
 

@@ -304,7 +304,6 @@
             letter-spacing: .1em;
             text-transform: uppercase;
             color: var(--muted);
-            cursor: none;
             text-decoration: none;
             display: flex;
             align-items: center;

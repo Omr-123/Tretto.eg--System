@@ -10,11 +10,11 @@ class UserController{
         $this->conn=$db->getConnection();
     }
     public function Fav_Num($ID){
-        // Get cart ID
-    $query="SELECT COUNT(*) as total FROM favorties WHERE userID=:id";
+    $query="SELECT COUNT(*) as total FROM favorites WHERE userID=:id";
     $stmt=$this->conn->prepare($query);
     $stmt->bindParam(':id',$ID);
-    return $result['total'] ?? 0;
+    $stmt->execute();
+    return $stmt->fetchColumn();
     }
    public function cart_Number($ID) {
 

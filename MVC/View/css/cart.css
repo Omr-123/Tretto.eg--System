@@ -61,7 +61,6 @@
             height: 28px;
             border: 1.5px solid var(--border);
             background: var(--white);
-            cursor: none;
             font-size: 14px;
             color: var(--mid);
             display: flex;

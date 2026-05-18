@@ -61,13 +61,13 @@ $favorites = getFavoritesForView($userID);
                             <div class="prod-title"><?= $item['name'] ?></div>
                             <div class="prod-price"><?= $item['price'] ?> EGP</div>
 
-                            <a href="../../Controller/favorites_Controller.php?action=remove&id=<?= $item['favoriteID'] ?>"
+                            <a href="../../Controller/favorites_Controller.php?action=remove&id=<?= $item['favoriteID'] ?>&User=<?= $_SESSION['userID']?>"
                                 class="btn-secondary">Remove</a>
                         </div>
                     <?php endforeach; ?>
                 </div>
-            <?php endif; ?>
-        </div>
+                <?php endif; ?>
+            </div>
     </div>
     <?php include 'component/footer.php'; ?>
     <script src="../javascript/all.js" defer></script>

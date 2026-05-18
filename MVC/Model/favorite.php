@@ -57,8 +57,7 @@ class Favorite
 
     public function removeFavorite($favoriteID)
     {
-        $favoriteID = intval($favoriteID);
-        return $this->conn->query(
+        $this->conn->query(
             "DELETE FROM favorites WHERE favoriteID = $favoriteID"
         );
     }
