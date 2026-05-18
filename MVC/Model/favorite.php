@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/../../db.php';
+require_once __DIR__ . '/../Controller/products_controller.php';
+
 class Favorite
 {
     private $conn;
@@ -14,26 +16,27 @@ class Favorite
     {
         $userID = intval($userID);
         $result = $this->conn->query("
-            SELECT
-                f.favoriteID,
-                f.addedDate,
-                p.PID,
-                p.name,
-                p.price,
-                pi.images AS image
-            FROM favorites f
-            JOIN product p ON f.PID = p.PID
-            LEFT JOIN product_variants pv ON pv.PID = p.PID
-            LEFT JOIN product_images pi ON pi.pvid = pv.pvid
-            WHERE f.userID = $userID
-            GROUP BY f.favoriteID
-            ORDER BY f.addedDate DESC
+            SELECT * FROM favorites WHERE userID=$userID
+        ");
+        if (!$result)
+            return [];
+        $r=$result->fetch_all(MYSQLI_ASSOC);
+        $p=new ProductsController();
+        $prod=[];
+        foreach($r as $rr){
+            $prod[]=$p->getProductbyID($rr['PID']);
+        }
+        return $prod;
+    }
+    public function getFav($userID){
+        $userID = intval($userID);
+        $result = $this->conn->query("
+            SELECT * FROM favorites WHERE userID=$userID
         ");
         if (!$result)
             return [];
         return $result->fetch_all(MYSQLI_ASSOC);
     }
-
     public function favoriteExists($userID, $PID)
     {
         $userID = intval($userID);

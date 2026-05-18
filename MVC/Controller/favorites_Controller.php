@@ -35,4 +35,9 @@ function getFavoritesForView($userID)
     $favModel = new Favorite();
     return $favModel->getFavorites($userID);
 }
+function getFav($userID){
+
+    $favModel = new Favorite();
+    return $favModel->getFav($userID);
+}
 ?>
