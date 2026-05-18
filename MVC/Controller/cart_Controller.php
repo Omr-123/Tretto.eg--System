@@ -18,7 +18,7 @@ class Cart_Controller{
     }
     public function getUserCart($user_id){
 
-     $query = "SELECT cartID FROM cart WHERE ID = :user_id";
+     $query = "SELECT cartID FROM cart WHERE userID = :user_id";
         $stmt = $this->cart_model->prepare($query);
         $stmt->bindParam(':user_id', $user_id);
         $stmt->execute();
