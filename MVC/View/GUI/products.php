@@ -11,19 +11,21 @@ $user_id = 1;
 
 $list = new ProductsController();
 
-if (isset($_GET['add_to_cart'])) {
-    $list->addToCart((int)$_GET['add_to_cart'], $user_id);
+if (isset($_GET['PID']) && isset($_GET['pvid']) && isset($_GET['price'])) {
+    $list->addToCart((int)$_GET['PID'], (int)$_GET['pvid'],(INT)$_GET['price'], $user_id);
 }
-
+    
 if (isset($_GET['add_to_fav'])) {
     $list->addToFav((int)$_GET['add_to_fav'], $user_id);
 }
-
+        
 if (isset($_GET['sort']) && $_GET['sort'] !== '') {
     $products = $list->getFilter($_GET['sort']);
-} else {
+} 
+else {
     $products = $list->getAllProducts();
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -41,8 +43,8 @@ if (isset($_GET['sort']) && $_GET['sort'] !== '') {
     <title>Products - Tretto.eg</title>
 </head>
 <body>
-    
     <?php include 'component/navbar.php'; ?>
+    
     <!-- PAGE 5: PRODUCT LISTING -->
     <div class="page" id="page-products">
         <div class="page-header">
@@ -82,9 +84,10 @@ if (isset($_GET['sort']) && $_GET['sort'] !== '') {
                                 <img class="prod-photo" src="<?= $product->variants[0]->img_url[0]; ?>" alt="<?= $product->name; ?>">
                                 <div class="prod-ov">
                                     <form method="GET" action="products.php" class="prod-action-form">
-                                        <input type="hidden" name="add_to_cart" value="<?= $product->pid ?>">
+                                        <input type="hidden" name="PID" value="<?= $product->pid ?>">
+                                        <input type="hidden" name="pvid" value="<?= $product->variants[0]->pvid ?? '' ?>">
+                                        <input type="hidden" name="price" value="<?= $product->price ?>">
                                         <button class="btn-primary" type="submit">Add to Cart</button>
-                                       
                                     </form>
                                     <form method="GET" action="products.php" class="prod-action-form">
                                         <input type="hidden" name="add_to_fav" value="<?= $product->pid ?>">
