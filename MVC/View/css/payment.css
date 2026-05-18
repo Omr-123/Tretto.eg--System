@@ -1,0 +1,389 @@
+/* ════════════════════ PAYMENT PAGE ════════════════════ */
+
+.payment-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 36px;
+    align-items: start;
+}
+
+.payment-form-box {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: var(--shadow, 0 8px 40px rgba(45, 27, 37, .06));
+}
+
+.co-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--dark);
+}
+
+/* ── Payment method cards ── */
+.pay-method-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.pay-method {
+    border: 2px solid var(--border);
+    padding: 20px;
+    cursor: pointer;
+    transition: all .2s;
+    border-radius: 16px;
+    position: relative;
+    background: var(--white);
+    text-align: left;
+    font-family: 'DM Sans', sans-serif;
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.pay-method:hover,
+.pay-method.sel {
+    border-color: var(--rose);
+    background: rgba(232, 103, 138, .04);
+}
+
+.pay-method:focus-visible {
+    outline: 2px solid var(--rose);
+    outline-offset: 2px;
+}
+
+.pay-method-ico {
+    font-size: 28px;
+    margin-bottom: 10px;
+    line-height: 1;
+}
+
+.pay-method-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--dark);
+}
+
+.pay-method-desc {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.pay-method-check {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #fff;
+    transition: all .2s;
+    background: var(--white);
+}
+
+.pay-method.sel .pay-method-check {
+    background: linear-gradient(135deg, var(--rose), var(--mauve));
+    border-color: transparent;
+}
+
+/* ── Visa / COD panels ── */
+.visa-form,
+.cod-form {
+    padding: 20px;
+    background: var(--blush);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 4px;
+}
+
+.visa-form.hidden,
+.cod-form.hidden {
+    display: none;
+}
+
+.cod-form-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--dark);
+}
+
+.cod-form-message {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+.cod-form-message strong {
+    color: var(--rose-d);
+    font-weight: 700;
+}
+
+.payment-submit-wrap {
+    margin-top: 24px;
+}
+
+#payment-form .btn-primary {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    padding: 16px 28px;
+    cursor: pointer;
+}
+
+/* ── Order review sidebar ── */
+.order-mini {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    padding: 24px;
+    position: sticky;
+    top: 88px;
+    border-radius: 20px;
+    box-shadow: var(--shadow, 0 8px 40px rgba(45, 27, 37, .06));
+}
+
+.order-mini-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--dark);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.order-mini-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(232, 103, 138, .08);
+}
+
+.order-mini-item:last-of-type {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.omi-img {
+    width: 56px;
+    height: 68px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--blush2);
+    border: 1px solid var(--border);
+}
+
+.omi-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.omi-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.omi-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--dark);
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+
+.omi-var {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+}
+
+.omi-color-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, .12);
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.omi-pr {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--rose-d);
+    margin-top: 6px;
+}
+
+.omi-pr-unit {
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+/* ── Totals ── */
+.order-summary-rows {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1.5px solid var(--border);
+}
+
+.cs-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--mid);
+    margin-bottom: 8px;
+    gap: 12px;
+}
+
+.cs-row.total {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-top: 10px;
+    margin-bottom: 0;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(232, 103, 138, .25);
+}
+
+.cs-lbl {
+    color: inherit;
+}
+
+.cs-val {
+    font-weight: 700;
+    color: var(--dark);
+    white-space: nowrap;
+}
+
+.cs-row.total .cs-val {
+    color: var(--rose-d);
+    font-size: 17px;
+}
+
+.payment-secure-note {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(232, 103, 138, .1);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.5;
+}
+
+/* ── Alerts & empty state ── */
+.payment-alert {
+    background: #fff0f3;
+    border: 1px solid var(--rose);
+    color: var(--rose-d);
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.payment-empty {
+    text-align: center;
+    padding: 72px 24px;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.payment-empty p {
+    margin-bottom: 24px;
+    font-weight: 600;
+    font-size: 18px;
+    font-family: 'Playfair Display', serif;
+    color: var(--dark);
+}
+
+.payment-empty .btn-primary {
+    display: inline-flex;
+    width: auto;
+    min-width: 200px;
+    text-decoration: none;
+}
+
+/* ── Form spacing inside payment box ── */
+.payment-form-box .form-group {
+    margin-bottom: 16px;
+}
+
+.payment-form-box .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 0;
+}
+
+.payment-form-box .form-row .form-group {
+    margin-bottom: 16px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .payment-layout {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
+
+    .order-mini {
+        position: static;
+        order: -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .pay-method-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-form-box {
+        padding: 22px 18px;
+    }
+
+    .payment-form-box .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .page-header {
+        padding: 36px 20px 24px !important;
+    }
+
+    .page-wrap {
+        padding: 24px 16px 48px !important;
+    }
+}

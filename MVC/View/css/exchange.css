@@ -444,7 +444,9 @@
             height: 66px;
             object-fit: cover;
             border-radius: 10px;
-            flex-shrink: 0
+            flex-shrink: 0;
+            background: var(--blush2);
+            border: 1px solid var(--border)
         }
 
         .osc-info {
@@ -1035,14 +1037,47 @@
         }
 
         /* ── SUCCESS STATE ── */
+        body.exchange-submitted .page-hero,
+        body.exchange-submitted .policy-strip {
+            display: none
+        }
+
+        body.exchange-submitted {
+            padding-top: 70px
+        }
+
+        body.exchange-submitted nav {
+            box-shadow: 0 2px 20px rgba(45, 27, 37, .06)
+        }
+
         .success-screen {
             display: none;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            padding: 52px 24px
+            width: 100%;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+            min-height: calc(100vh - 70px);
+            justify-content: center
         }
 
         .success-screen.show {
-            display: block
+            display: flex
+        }
+
+        .success-badge {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(39, 174, 96, .12);
+            color: var(--success);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: .1em;
+            text-transform: uppercase
         }
 
         .success-anim {
@@ -1050,11 +1085,13 @@
             height: 90px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--rose), var(--mauve));
+            color: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 24px;
+            margin: 0 auto 20px;
             font-size: 38px;
+            line-height: 1;
             animation: popIn .6s cubic-bezier(.34, 1.56, .64, 1);
             box-shadow: 0 8px 32px rgba(232, 103, 138, .4)
         }
@@ -1111,13 +1148,28 @@
             display: inline-block;
             background: rgba(232, 103, 138, .1);
             border: 1.5px solid rgba(232, 103, 138, .3);
-            padding: 9px 22px;
+            padding: 10px 24px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 700;
             color: var(--rose-d);
-            margin-bottom: 28px;
-            letter-spacing: .04em
+            margin-bottom: 24px;
+            letter-spacing: .06em;
+            font-family: 'DM Sans', monospace
+        }
+
+        .success-note {
+            max-width: 460px;
+            margin: 0 auto 28px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            font-size: 12px;
+            line-height: 1.7;
+            color: var(--mid);
+            font-weight: 400;
+            text-align: center
         }
 
         .success-details {
@@ -1135,8 +1187,9 @@
         .sd-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(232, 103, 138, .08);
             font-size: 13px
         }
@@ -1153,14 +1206,18 @@
 
         .sd-val {
             font-weight: 700;
-            color: var(--dark)
+            color: var(--dark);
+            text-align: right;
+            max-width: 62%;
+            word-break: break-word
         }
 
         .success-acts {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
-            flex-wrap: wrap
+            flex-wrap: wrap;
+            width: 100%
         }
 
         .btn-rose {
@@ -1172,11 +1229,15 @@
             font-weight: 700;
             letter-spacing: .08em;
             text-transform: uppercase;
-            
+            text-decoration: none;
             font-family: 'DM Sans', sans-serif;
             border-radius: 20px;
             box-shadow: 0 4px 16px rgba(232, 103, 138, .3);
-            transition: all .2s
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer
         }
 
         .btn-rose:hover {
@@ -1193,10 +1254,14 @@
             font-weight: 700;
             letter-spacing: .08em;
             text-transform: uppercase;
-        
+            text-decoration: none;
             font-family: 'DM Sans', sans-serif;
             border-radius: 20px;
-            transition: all .2s
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer
         }
 
         .btn-outline-rose:hover {
@@ -1243,5 +1308,52 @@
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(var(--rose), var(--mauve));
             border-radius: 4px
+        }
+
+        .order-sel-card,
+        .type-btn,
+        .reason-chip {
+            cursor: pointer
+        }
+
+        .form-card.card-disabled {
+            opacity: 0.55;
+            pointer-events: none
+        }
+
+        .form-card.card-disabled .order-sel-card {
+            pointer-events: auto;
+            opacity: 1
+        }
+
+        @media (max-width: 600px) {
+            .success-screen {
+                padding: 24px 16px 40px;
+                min-height: calc(100vh - 64px)
+            }
+
+            .success-title {
+                font-size: 24px
+            }
+
+            .sd-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px
+            }
+
+            .sd-val {
+                max-width: 100%;
+                text-align: left
+            }
+
+            .success-acts {
+                flex-direction: column
+            }
+
+            .success-acts .btn-rose,
+            .success-acts .btn-outline-rose {
+                width: 100%
+            }
         }
     

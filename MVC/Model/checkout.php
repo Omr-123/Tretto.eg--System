@@ -3,82 +3,107 @@ require_once __DIR__ . '/../../db.php';
 
 class Checkout
 {
-    public static function getCartItems($userID)
+    private static function conn(): mysqli
     {
-        $db = new Database();
-        $conn = $db->getConnection();
+        global $conn;
+        return $conn;
+    }
 
+    public static function getCartItems(int $userID): array
+    {
+        if ($userID <= 0) {
+            return ['items' => [], 'total' => 0];
+        }
+
+        $conn = self::conn();
         $stmt = $conn->prepare("
             SELECT ci.PID, ci.quantity, ci.price, p.name, p.category
             FROM cart ca
-            JOIN cart_items ci ON ca.cartID = ci.cartID
-            JOIN product p     ON ci.PID    = p.PID
+            INNER JOIN cart_items ci ON ca.cartID = ci.cartID
+            INNER JOIN product p ON ci.PID = p.PID
             WHERE ca.userID = ?
         ");
-        $stmt->execute([$userID]);
-        $items = $stmt->fetchAll();
 
-        $total = 0;
-        foreach ($items as $row) {
-            $total += $row['price'] * $row['quantity'];
+        if (!$stmt) {
+            return ['items' => [], 'total' => 0];
         }
 
-        return ['items' => $items, 'total' => $total];
+        $stmt->bind_param('i', $userID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $items = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt->close();
+
+        $total = 0.0;
+        foreach ($items as $row) {
+            $total += (float) $row['price'] * (int) $row['quantity'];
+        }
+
+        return ['items' => $items, 'total' => round($total, 2)];
     }
 
-    public static function placeOrder($userID, $shippingAddress, $city, $governorate, $building, $deliveryDate, $paymentMethod)
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
+    public static function saveCheckout(
+        int $userID,
+        string $shippingAddress,
+        string $city,
+        string $governorate,
+        string $building
+    ): array {
+        if ($userID <= 0) {
+            return ['success' => false, 'error' => 'Please log in first.'];
+        }
 
-        // cart
-        $stmt = $conn->prepare("SELECT cartID FROM cart WHERE userID = ? LIMIT 1");
-        $stmt->execute([$userID]);
-        $cart = $stmt->fetch();
-        if (!$cart)
+        $conn = self::conn();
+
+        $stmt = $conn->prepare('SELECT cartID FROM cart WHERE userID = ? LIMIT 1');
+        if (!$stmt) {
+            return ['success' => false, 'error' => 'Database error.'];
+        }
+
+        $stmt->bind_param('i', $userID);
+        $stmt->execute();
+        $cart = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        if (!$cart) {
             return ['success' => false, 'error' => 'Cart not found.'];
-        $cartID = $cart['cartID'];
+        }
 
-        // items
-        $stmt = $conn->prepare("SELECT PID, quantity, price FROM cart_items WHERE cartID = ?");
-        $stmt->execute([$cartID]);
-        $items = $stmt->fetchAll();
-        if (!$items)
+        $cartID = (int) $cart['cartID'];
+
+        $stmt = $conn->prepare('SELECT COUNT(*) AS cnt FROM cart_items WHERE cartID = ?');
+        if (!$stmt) {
+            return ['success' => false, 'error' => 'Database error.'];
+        }
+
+        $stmt->bind_param('i', $cartID);
+        $stmt->execute();
+        $count = (int) ($stmt->get_result()->fetch_assoc()['cnt'] ?? 0);
+        $stmt->close();
+
+        if ($count === 0) {
             return ['success' => false, 'error' => 'Cart is empty.'];
-
-        $total = 0;
-        foreach ($items as $row) {
-            $total += $row['price'] * $row['quantity'];
         }
 
-        // save checkout
         $stmt = $conn->prepare("
-        INSERT INTO checkout (userID, cartID, shippingAddress, city, governorate, building, deliveryDate, paymentMethod)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    ");
-        $stmt->execute([$userID, $cartID, $shippingAddress, $city, $governorate, $building, $deliveryDate, $paymentMethod]);
-        $checkoutID = $conn->lastInsertId();
+            INSERT INTO checkout (userID, cartID, shippingAddress, city, governorate, building)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
 
-        // save order linked to checkout
-        $stmt = $conn->prepare("
-        INSERT INTO orders (userID, totalAmount, status, shippingAddress, deliveryDate, paymentMethod, checkoutID)
-        VALUES (?, ?, 'Pending', ?, ?, ?, ?)
-    ");
-        $stmt->execute([$userID, $total, $shippingAddress, $deliveryDate, $paymentMethod, $checkoutID]);
-        $orderID = $conn->lastInsertId();
-
-        // order items
-        $stmt = $conn->prepare("INSERT INTO order_items (orderID, PID, quantity, price) VALUES (?, ?, ?, ?)");
-        foreach ($items as $item) {
-            $stmt->execute([$orderID, $item['PID'], $item['quantity'], $item['price']]);
+        if (!$stmt) {
+            return ['success' => false, 'error' => 'Database error.'];
         }
 
-        // clear cart
-        $conn->prepare("DELETE FROM cart_items WHERE cartID = ?")->execute([$cartID]);
-        $conn->prepare("UPDATE cart SET total = 0 WHERE cartID = ?")->execute([$cartID]);
+        $stmt->bind_param('iissss', $userID, $cartID, $shippingAddress, $city, $governorate, $building);
 
-        return ['success' => true, 'orderID' => $orderID, 'checkoutID' => $checkoutID];
+        if (!$stmt->execute()) {
+            $stmt->close();
+            return ['success' => false, 'error' => 'Could not save checkout.'];
+        }
+
+        $checkoutID = (int) $stmt->insert_id;
+        $stmt->close();
+
+        return ['success' => true, 'checkoutID' => $checkoutID];
     }
-
 }
-

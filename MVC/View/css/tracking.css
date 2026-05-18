@@ -141,3 +141,26 @@
 .st-step.active .st-lbl {
     color: var(--rose)
 }
+
+.track-error {
+    display: none;
+    color: #e24b4a;
+    background: #fcebeb;
+    border: 1.5px solid #f5c6c6;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.track-estimate {
+    background: rgba(232, 103, 138, .07);
+    border: 1.5px solid var(--border);
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--mid);
+    border-radius: 12px;
+}

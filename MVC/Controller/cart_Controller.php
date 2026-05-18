@@ -1,5 +1,4 @@
 <?php
-
 require_once (__DIR__ . '/../Model/cart.php');
 require_once (__DIR__ . '/../Model/product.php');
 require_once (__DIR__ . '/../Model/ProductFactory.php');
@@ -7,14 +6,12 @@ require_once (__DIR__ . '/products_controller.php');
 require_once (__DIR__ . '/../../db.php');
 require_once('products_controller.php');
 
-
 class Cart_Controller{
     private $cart_model;
 
     public function __construct(){
         $database = new Databases();
         $this->cart_model=$database->getConnection();
-
     }
     public function getUserCart($user_id){
 
@@ -25,7 +22,7 @@ class Cart_Controller{
         $cartID = $stmt->fetch()['cartID'];
 
         if (!$cartID) {
-            $query = "INSERT INTO cart (ID) VALUES (:user_id)";
+            $query = "INSERT INTO cart (userID) VALUES (:user_id)";
             $stmt = $this->cart_model->prepare($query);
             $stmt->bindParam(':user_id', $user_id);
             $stmt->execute();

@@ -1,31 +1,46 @@
 <?php
 require_once __DIR__ . '/../Model/user.php';
+require_once __DIR__ . '/../Model/RegistrationValidator.php';
+require_once __DIR__ . '/../Model/LoginValidator.php';
+
 class AuthController
 {
     private UserModel $userModel;
-
     public function __construct()
     {
-        if (session_status() === PHP_SESSION_NONE)
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
         $this->userModel = new UserModel();
     }
-    public function login(): void
+
+    /**
+     * @return array{success: bool, authError: string, old: array{email: string}, redirect?: string}
+     */
+    public function processLogin(array $post): array
     {
-        $email = trim($_POST['email'] ?? '');
-        $password = trim($_POST['password'] ?? '');
+        $email = trim($post['email'] ?? '');
+        $password = $post['password'] ?? '';
 
-        if (empty($email) || empty($password)) {
-            $this->redirectWithError('login', 'Please fill in all fields.');
-            return;
+        $result = LoginValidator::authenticate($this->userModel, $email, $password);
+
+        if (!empty($result['errors'])) {
+            unset(
+                $_SESSION['logged_in'],
+                $_SESSION['userID'],
+                $_SESSION['name'],
+                $_SESSION['email'],
+                $_SESSION['user_type']
+            );
+
+            return [
+                'success' => false,
+                'authError' => 'Invalid email or password',
+                'old' => ['email' => $email],
+            ];
         }
 
-        $user = $this->userModel->findByEmail($email);
-
-        if (!$user || $password !== $user->password) {
-            $this->redirectWithError('login', 'Incorrect email or password.');
-            return;
-        }
+        $user = $result['user'];
 
         $_SESSION['userID'] = $user->userID;
         $_SESSION['name'] = $user->name;
@@ -36,46 +51,45 @@ class AuthController
         if ($user->user_type === 'admin') {
             header('Location: /Tretto.eg--System/MVC/View/GUI/component/admin_dashboard.php');
         } else {
-            header('Location: /Tretto.eg--System/MVC/View/GUI/component/index.php');
+            header('Location: /Tretto.eg--System/MVC/View/GUI/index.php');
         }
+
         exit;
     }
+
     public function register(): void
     {
         $fname = trim($_POST['fname'] ?? '');
         $lname = trim($_POST['lname'] ?? '');
         $email = trim($_POST['email'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
-        $password = trim($_POST['password'] ?? '');
+        $password = $_POST['password'] ?? '';
+
         $_SESSION['old_input'] = [
             'fname' => $fname,
             'lname' => $lname,
             'email' => $email,
             'phone' => $phone,
-            'user_type' => 'user',
-
-
         ];
-        if (empty($fname) || empty($lname) || empty($email) || empty($password)) {
-            $this->redirectWithError('register', 'Please fill in all required fields.');
-            return;
+
+        $errors = RegistrationValidator::validate([
+            'fname' => $fname,
+            'lname' => $lname,
+            'email' => $email,
+            'phone' => $phone,
+            'password' => $password,
+        ]);
+
+        if (RegistrationValidator::validateEmailFormat($email) && $this->userModel->emailExists($email)) {
+            $errors['email'] = 'This email is already registered';
         }
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $this->redirectWithError('register', 'email');
-            return;
+
+        if (!empty($errors)) {
+            $_SESSION['field_errors'] = $errors;
+            header('Location: /Tretto.eg--System/MVC/View/GUI/register.php');
+            exit;
         }
-        if ($this->userModel->emailExists($email)) {
-            $this->redirectWithError('register', 'email');
-            return;
-        }
-        if (!empty($phone) && !preg_match('/^01[0125][0-9]{8}$/', $phone)) {
-            $this->redirectWithError('register', 'phone');
-            return;
-        }
-        if (strlen($password) < 8) {
-            $this->redirectWithError('register', 'password');
-            return;
-        }
+
         $created = $this->userModel->createUser([
             'name' => $fname . ' ' . $lname,
             'email' => $email,
@@ -83,16 +97,39 @@ class AuthController
             'password' => $password,
             'user_type' => 'user',
         ]);
+
         if (!$created) {
-            $this->redirectWithError('register', 'Something went wrong. Please try again.');
-            return;
+            $_SESSION['field_errors'] = ['_global' => 'Something went wrong. Please try again.'];
+            header('Location: /Tretto.eg--System/MVC/View/GUI/register.php');
+            exit;
         }
 
-        unset($_SESSION['old_input']);
+        unset($_SESSION['old_input'], $_SESSION['field_errors']);
         $_SESSION['auth_success'] = 'Account created successfully! Please sign in.';
         header('Location: /Tretto.eg--System/MVC/View/GUI/login.php');
         exit;
     }
+
+    public function checkEmail(): void
+    {
+        header('Content-Type: application/json');
+
+        $email = trim($_GET['email'] ?? '');
+
+        if (!RegistrationValidator::validateEmailFormat($email)) {
+            echo json_encode(['valid' => false, 'exists' => false, 'message' => 'Invalid email format']);
+            exit;
+        }
+
+        $exists = $this->userModel->emailExists($email);
+        echo json_encode([
+            'valid' => true,
+            'exists' => $exists,
+            'message' => $exists ? 'This email is already registered' : '',
+        ]);
+        exit;
+    }
+
     public function logout(): void
     {
         $_SESSION = [];
@@ -100,6 +137,7 @@ class AuthController
         header('Location: /Tretto.eg--System/MVC/View/GUI/index.php');
         exit;
     }
+
     private function redirectWithError(string $page, string $message): void
     {
         $_SESSION['auth_error'] = $message;
@@ -107,15 +145,38 @@ class AuthController
         exit;
     }
 }
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $controller = new AuthController();
-    $action = trim($_POST['action'] ?? '');
 
-    match ($action) {
-        'login' => $controller->login(),
-        'register' => $controller->register(),
-        'logout' => $controller->logout(),
-        default => header('Location: /Tretto.eg--System/MVC/View/GUI/login.php'),
-    };
-    exit;
+if ($_SERVER['SCRIPT_NAME'] == '/Tretto.eg--System/MVC/Controller/AuthController.php') {
+
+    $controller = new AuthController();
+
+    if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+
+        if (($_GET['action'] ?? '') == 'checkEmail')
+        {
+            $controller->checkEmail();
+        }
+
+        exit;
+    }
+
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+        $action = $_POST['action'] ?? '';
+
+        if ($action == 'login') {
+            $controller->login();
+
+        } elseif ($action == 'register') {
+            $controller->register();
+
+        } elseif ($action == 'logout') {
+            $controller->logout();
+
+        } else {
+            header('Location: /Tretto.eg--System/MVC/View/GUI/login.php');
+        }
+
+        exit;
+    }
 }

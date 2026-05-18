@@ -1,24 +1,48 @@
 <?php
-require_once __DIR__ . '/../../Controller/exchange_controller.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/../../Controller/exchange_Controller.php';
 
 $controller   = new ExchangeController();
 $submitResult = null;
+$old          = [];
 
-// ── Handle POST submit first ──────────────────────────────────────────────────
+// Post/Redirect/Get — يمنع إعادة إرسال الفورم عند refresh
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $submitResult = $controller->handleSubmit();
+    $result = $controller->handleSubmit();
+    $_SESSION['exchange_flash'] = $result;
+    if (empty($result['success'])) {
+        $_SESSION['exchange_old'] = $_POST;
+    }
+    header('Location: exchange.php');
+    exit;
 }
+
+$submitResult = $_SESSION['exchange_flash'] ?? null;
+$old          = $_SESSION['exchange_old'] ?? [];
+unset($_SESSION['exchange_flash'], $_SESSION['exchange_old']);
 
 // ── Load page data (orders + products) ───────────────────────────────────────
 $pageData = $controller->loadPage();
-$orders   = $pageData['orders'];
-echo "<pre>";
-print_r($orders);
-echo "</pre>";
-$products = $pageData['products'];
+$orders             = $pageData['orders'];
+$products           = $pageData['products'];
+$sizes              = $pageData['sizes'];
+$colors             = $pageData['colors'];
+$variantsByProduct  = $pageData['variants_by_product'];
 
-// ── Keep old POST values to re-fill form on error ─────────────────────────────
-$old = $_POST ?? [];
+$exchangeConfig = [
+    'orderId' => (string) ($old['order_id'] ?? ''),
+    'productId' => (string) ($old['old_product_id'] ?? ''),
+    'requestType' => (string) ($old['request_type'] ?? ''),
+    'reason' => (string) ($old['reason'] ?? ''),
+    'contactMethod' => (string) ($old['contact_method'] ?? 'whatsapp'),
+    'preferredSize' => (string) ($old['preferred_size'] ?? ''),
+    'preferredColor' => (string) ($old['preferred_color'] ?? ''),
+    'newProductId' => (string) ($old['new_product_id'] ?? ''),
+    'variantsByProduct' => $variantsByProduct,
+];
 ?>
 <!DOCTYPE html>
 <html lang="ar" dir="ltr">
@@ -26,13 +50,20 @@ $old = $_POST ?? [];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Return & Exchange — Tretto.eg</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/navbar.css">
     <link rel="stylesheet" href="../css/main.css">
-    <link rel="stylesheet" href="../css/exchange.css">
-    <script src="../javascript/navbar.js" defer></script>
-    <script src="../javascript/exchange.js" defer></script>
+    <?php
+    $exchangeCssVer = @filemtime(__DIR__ . '/../css/exchange.css') ?: time();
+    $exchangeJsVer = @filemtime(__DIR__ . '/../javascript/exchange.js') ?: time();
+    ?>
+    <link rel="stylesheet" href="../css/exchange.css?v=<?= (int) $exchangeCssVer ?>">
+    <script id="exchange-config" type="application/json"><?= json_encode($exchangeConfig, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?></script>
+    <script src="../javascript/exchange.js?v=<?= (int) $exchangeJsVer ?>" defer></script>
 </head>
-<body>
+<body class="<?= ($submitResult && !empty($submitResult['success'])) ? 'exchange-submitted' : '' ?>">
 
 <div id="cur"></div>
 <div id="cur-r"></div>
@@ -41,7 +72,7 @@ $old = $_POST ?? [];
 
 <nav>
     <a class="logo">Tretto<span>.</span>eg <span class="logo-heart">♥</span></a>
-    <a class="nav-back" onclick="history.back()">Back to My Orders</a>
+    <a class="nav-back" onclick="window.location.href='index.php'">Back to My Orders</a>
 </nav>
 
 <div class="page-hero">
@@ -72,7 +103,7 @@ $old = $_POST ?? [];
 <!-- ═══════════════════ SUCCESS SCREEN (shown after successful submit) ════════ -->
 <?php if ($submitResult && $submitResult['success']): ?>
 
-<div class="success-screen" style="display:flex">
+<div class="success-screen show">
     <div class="success-confetti">🎀</div>
     <div class="success-anim">✓</div>
     <div class="success-badge">Request Submitted!</div>
@@ -168,7 +199,7 @@ $old = $_POST ?? [];
             </div>
 
             <!-- ══════════════════════ THE FORM ══════════════════════════════ -->
-            <form method="POST" action="" id="exchange-form">
+            <form method="POST" action="exchange.php" id="exchange-form" novalidate>
 
                 <!-- Hidden fields filled by JS when user clicks cards/chips -->
                 <input type="hidden" name="order_id"       id="h-order-id"
@@ -179,8 +210,8 @@ $old = $_POST ?? [];
                        value="<?= $old['request_type']   ?? '' ?>">
                 <input type="hidden" name="reason"         id="h-reason"
                        value="<?= $old['reason']         ?? '' ?>">
-                <input type="hidden" name="contact_method" id="h-contact-method"
-                       value="<?= $old['contact_method'] ?? 'whatsapp' ?>">
+                <input type="hidden" id="h-contact-method"
+                       value="<?= htmlspecialchars($old['contact_method'] ?? 'whatsapp', ENT_QUOTES, 'UTF-8') ?>">
 
                 <!-- ══════════ CARD 1 — SELECT ITEM ══════════════════════════ -->
                 <div class="form-card" id="card-item">
@@ -198,24 +229,26 @@ $old = $_POST ?? [];
 
                         <?php else: ?>
                         <?php foreach ($orders as $order):
-                            $isSelected = (string)($old['order_id'] ?? '') === (string)$order['order_id'];
+                            $cardId = (int) $order['order_id'] . '-' . (int) $order['product_id'];
+                            $isSelected = (string)($old['order_id'] ?? '') === (string)$order['order_id']
+                                && (string)($old['old_product_id'] ?? '') === (string)$order['product_id'];
                         ?>
                         <div class="order-sel-card <?= $isSelected ? 'selected' : '' ?>"
-                             id="osc-<?= $order['order_id'] ?>"
-                             onclick="selectOrder(
-                                 '<?= $order['order_id'] ?>',
-                                 '<?= $order['product_id'] ?>',
-                                 '<?= addslashes($order['product_name']) ?>'
-                             )">
+                             id="osc-<?= $cardId ?>"
+                             data-order-id="<?= (int) $order['order_id'] ?>"
+                             data-product-id="<?= (int) $order['product_id'] ?>"
+                             role="button"
+                             tabindex="0">
 
                             <div class="osc-radio">
-                                <div class="osc-radio-dot <?= $isSelected ? 'active' : '' ?>"></div>
+                                <div class="osc-radio-dot"></div>
                             </div>
 
                             <img class="osc-img"
-                                 src="<?= $order['product_image'] ?? 'img/placeholder.jpg' ?>"
-                                 alt="<?= $order['product_name'] ?>"
-                                 onerror="this.src='img/placeholder.jpg'">
+                                 src="<?= htmlspecialchars($order['product_image'], ENT_QUOTES, 'UTF-8') ?>"
+                                 alt=""
+                                 loading="lazy"
+                                 onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2254%22 height=%2266%22%3E%3Crect fill=%22%23f5e6eb%22 width=%22100%25%22 height=%22100%25%22/%3E%3C/svg%3E'">
 
                             <div class="osc-info">
                                 <div class="osc-name"><?= $order['product_name'] ?></div>
@@ -249,15 +282,15 @@ $old = $_POST ?? [];
                     <div class="form-card-sub">What would you like to do with this item?</div>
 
                     <div class="type-toggle">
-                        <div class="type-btn <?= ($old['request_type'] ?? '') === 'refund' ? 'selected' : '' ?>"
-                             id="type-refund" onclick="selectType('refund')">
+                        <div class="type-btn <?= ($old['request_type'] ?? '') === 'refund' ? 'active' : '' ?>"
+                             id="type-refund" role="button" tabindex="0">
                             <div class="type-check" id="check-refund"></div>
                             <div class="type-btn-ico">💸</div>
                             <div class="type-btn-name">Full Refund</div>
                             <div class="type-btn-desc">Get your money back to your original payment method</div>
                         </div>
-                        <div class="type-btn <?= ($old['request_type'] ?? '') === 'exchange' ? 'selected' : '' ?>"
-                             id="type-exchange" onclick="selectType('exchange')">
+                        <div class="type-btn <?= ($old['request_type'] ?? '') === 'exchange' ? 'active' : '' ?>"
+                             id="type-exchange" role="button" tabindex="0">
                             <div class="type-check" id="check-exchange"></div>
                             <div class="type-btn-ico">🔁</div>
                             <div class="type-btn-name">Exchange</div>
@@ -289,10 +322,10 @@ $old = $_POST ?? [];
                             foreach ($reasons as $r):
                                 $isActive = ($old['reason'] ?? '') === $r;
                             ?>
-                            <div class="reason-chip <?= $isActive ? 'active' : '' ?>"
-                                 onclick="selectReason(this, '<?= $r ?>')">
-                                <?= $r ?>
-                            </div>
+                            <div class="reason-chip <?= $isActive ? 'selected' : '' ?>"
+                                 data-reason="<?= htmlspecialchars($r, ENT_QUOTES, 'UTF-8') ?>"
+                                 role="button"
+                                 tabindex="0"><?= htmlspecialchars($r, ENT_QUOTES, 'UTF-8') ?></div>
                             <?php endforeach; ?>
                         </div>
                         <div class="error-msg" id="err-reason">Please select a reason.</div>
@@ -302,7 +335,8 @@ $old = $_POST ?? [];
                         <label class="form-label">Additional Details <span class="req">*</span></label>
                         <textarea class="form-input" name="details" id="reason-detail" maxlength="1000"
                             placeholder="Please describe the issue in more detail… (e.g. I ordered size 38 but received size 40)"
-                            oninput="countChars(this,'char-count')"><?= $old['details'] ?? '' ?></textarea>
+                             ><?= $old['details'] ?? '' ?></textarea>
+
                         <div class="char-count" id="char-count">0 / 1000 characters</div>
                         <div class="error-msg" id="err-detail">Please add more details (min. 20 characters).</div>
                     </div>
@@ -318,10 +352,10 @@ $old = $_POST ?? [];
                                 <label class="form-label">Preferred New Size</label>
                                 <select class="form-input" name="preferred_size" id="ex-size">
                                     <option value="">Same size</option>
-                                    <?php foreach (['36','37','38','39','40','41','42'] as $size): ?>
-                                    <option value="<?= $size ?>"
+                                    <?php foreach ($sizes as $size): ?>
+                                    <option value="<?= htmlspecialchars($size, ENT_QUOTES, 'UTF-8') ?>"
                                         <?= ($old['preferred_size'] ?? '') === $size ? 'selected' : '' ?>>
-                                        <?= $size ?>
+                                        <?= htmlspecialchars($size, ENT_QUOTES, 'UTF-8') ?>
                                     </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -330,10 +364,10 @@ $old = $_POST ?? [];
                                 <label class="form-label">Preferred New Colour</label>
                                 <select class="form-input" name="preferred_color" id="ex-color">
                                     <option value="">Same colour</option>
-                                    <?php foreach (['Denim Blue','Black','Taupe','Beige','Terracotta','Sand'] as $color): ?>
-                                    <option value="<?= $color ?>"
-                                        <?= ($old['preferred_color'] ?? '') === $color ? 'selected' : '' ?>>
-                                        <?= $color ?>
+                                    <?php foreach ($colors as $color): ?>
+                                    <option value="<?= htmlspecialchars($color['value'], ENT_QUOTES, 'UTF-8') ?>"
+                                        <?= ($old['preferred_color'] ?? '') === $color['value'] ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($color['label'], ENT_QUOTES, 'UTF-8') ?>
                                     </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -344,13 +378,21 @@ $old = $_POST ?? [];
                             <label class="form-label">Exchange for a Different Item?</label>
                             <select class="form-input" name="new_product_id" id="ex-item">
                                 <option value="">No — same item, different variant</option>
+                                <?php if (empty($products)): ?>
+                                <option value="" disabled>No products available in stock</option>
+                                <?php else: ?>
                                 <?php foreach ($products as $product): ?>
-                                <option value="<?= $product['product_id'] ?>"
-                                    <?= ($old['new_product_id'] ?? '') == $product['product_id'] ? 'selected' : '' ?>>
-                                    <?= $product['name'] ?>
-                                    (<?= number_format((float) $product['price'], 0) ?> EGP)
+                                <option value="<?= (int) $product['product_id'] ?>"
+                                    data-product-id="<?= (int) $product['product_id'] ?>"
+                                    <?= (string) ($old['new_product_id'] ?? '') === (string) $product['product_id'] ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?>
+                                    <?php if (!empty($product['category'])): ?>
+                                        (<?= htmlspecialchars($product['category'], ENT_QUOTES, 'UTF-8') ?>)
+                                    <?php endif; ?>
+                                    — <?= number_format((float) $product['price'], 0) ?> EGP
                                 </option>
                                 <?php endforeach; ?>
+                                <?php endif; ?>
                             </select>
                         </div>
                     </div>
@@ -398,8 +440,7 @@ $old = $_POST ?? [];
                             $selectedContact = $old['contact_method'] ?? 'whatsapp';
                             foreach ($contactMethods as $val => [$ico, $label]):
                             ?>
-                            <label class="contact-pref <?= $selectedContact === $val ? 'active' : '' ?>"
-                                   onclick="selectContact('<?= $val ?>')">
+                            <label class="contact-pref <?= $selectedContact === $val ? 'selected' : '' ?>">
                                 <input type="radio" name="contact_method" value="<?= $val ?>" hidden
                                        <?= $selectedContact === $val ? 'checked' : '' ?>>
                                 <div class="cp-ico"><?= $ico ?></div>
@@ -427,11 +468,10 @@ $old = $_POST ?? [];
 
                     <div class="submit-area">
                         <button type="button" class="btn-submit" id="submit-btn"
-                                onclick="submitRequest()"
                                 <?= empty($orders) ? 'disabled' : '' ?>>
                             <span>Submit Request</span> <span>💕</span>
                         </button>
-                        <button type="button" class="btn-secondary" onclick="resetForm()">Clear & Start Over</button>
+                        <button type="button" class="btn-secondary" id="reset-btn">Clear & Start Over</button>
                     </div>
 
                     <div class="submit-note">
@@ -522,184 +562,6 @@ $old = $_POST ?? [];
 </div>
 
 <?php endif; ?>
-
-<script>
-// ─── State ───────────────────────────────────────────────────────────────────
-let selectedOrderId   = '<?= $old['order_id']       ?? '' ?>';
-let selectedProductId = '<?= $old['old_product_id'] ?? '' ?>';
-let selectedType      = '<?= $old['request_type']   ?? '' ?>';
-let selectedReason    = '<?= $old['reason']         ?? '' ?>';
-
-// ─── Order card selection ─────────────────────────────────────────────────────
-function selectOrder(orderId, productId, productName) {
-    selectedOrderId   = orderId;
-    selectedProductId = productId;
-
-    document.querySelectorAll('.order-sel-card').forEach(c => c.classList.remove('selected'));
-    document.querySelectorAll('.osc-radio-dot').forEach(d => d.classList.remove('active'));
-
-    const card = document.getElementById('osc-' + orderId);
-    if (card) {
-        card.classList.add('selected');
-        card.querySelector('.osc-radio-dot').classList.add('active');
-    }
-
-    document.getElementById('h-order-id').value   = orderId;
-    document.getElementById('h-product-id').value = productId;
-    document.getElementById('err-item').style.display = 'none';
-}
-
-// ─── Request type selection ───────────────────────────────────────────────────
-function selectType(type) {
-    selectedType = type;
-    document.getElementById('h-request-type').value = type;
-
-    document.getElementById('type-refund').classList.toggle('selected',   type === 'refund');
-    document.getElementById('type-exchange').classList.toggle('selected', type === 'exchange');
-
-    document.getElementById('exchange-options').style.display =
-        type === 'exchange' ? 'block' : 'none';
-
-    document.getElementById('err-type').style.display = 'none';
-}
-
-// ─── Reason chip selection ────────────────────────────────────────────────────
-function selectReason(el, reason) {
-    selectedReason = reason;
-    document.getElementById('h-reason').value = reason;
-
-    document.querySelectorAll('.reason-chip').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    document.getElementById('err-reason').style.display = 'none';
-}
-
-// ─── Contact method selection ─────────────────────────────────────────────────
-function selectContact(val) {
-    document.getElementById('h-contact-method').value = val;
-    document.querySelectorAll('.contact-pref').forEach(l => l.classList.remove('active'));
-    document.querySelectorAll('input[name="contact_method"]').forEach(r => {
-        if (r.value === val) { r.checked = true; r.closest('.contact-pref').classList.add('active'); }
-    });
-}
-
-// ─── Character counter ────────────────────────────────────────────────────────
-function countChars(el, counterId) {
-    document.getElementById(counterId).textContent = el.value.length + ' / 1000 characters';
-}
-
-// ─── Client-side validation before submit ─────────────────────────────────────
-function validateAll() {
-    let ok = true;
-
-    if (!selectedOrderId) {
-        document.getElementById('err-item').style.display = 'block';
-        ok = false;
-    }
-
-    if (!selectedType) {
-        document.getElementById('err-type').style.display = 'block';
-        ok = false;
-    }
-
-    if (!selectedReason) {
-        document.getElementById('err-reason').style.display = 'block';
-        ok = false;
-    }
-
-    const details = document.getElementById('reason-detail').value.trim();
-    if (details.length < 20) {
-        document.getElementById('err-detail').style.display = 'block';
-        ok = false;
-    } else {
-        document.getElementById('err-detail').style.display = 'none';
-    }
-
-    const name = document.getElementById('c-name').value.trim();
-    if (!name) {
-        document.getElementById('err-name').style.display = 'block';
-        ok = false;
-    } else {
-        document.getElementById('err-name').style.display = 'none';
-    }
-
-    const email = document.getElementById('c-email').value.trim();
-    if (!email || !email.includes('@')) {
-        document.getElementById('err-email').style.display = 'block';
-        ok = false;
-    } else {
-        document.getElementById('err-email').style.display = 'none';
-    }
-
-    const phone = document.getElementById('c-phone').value.trim();
-    if (!phone || !/^01[0-9]{9}$/.test(phone)) {
-        document.getElementById('err-phone').style.display = 'block';
-        ok = false;
-    } else {
-        document.getElementById('err-phone').style.display = 'none';
-    }
-
-    if (!document.getElementById('agree-terms').checked) {
-        document.getElementById('err-terms').style.display = 'block';
-        ok = false;
-    } else {
-        document.getElementById('err-terms').style.display = 'none';
-    }
-
-    return ok;
-}
-
-// ─── Submit ───────────────────────────────────────────────────────────────────
-function submitRequest() {
-    if (!validateAll()) return;
-    document.getElementById('exchange-form').submit();
-}
-
-// ─── Reset ────────────────────────────────────────────────────────────────────
-function resetForm() {
-    selectedOrderId = selectedProductId = selectedType = selectedReason = '';
-
-    document.querySelectorAll('.order-sel-card').forEach(c => c.classList.remove('selected'));
-    document.querySelectorAll('.osc-radio-dot').forEach(d => d.classList.remove('active'));
-    document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
-    document.querySelectorAll('.reason-chip').forEach(c => c.classList.remove('active'));
-
-    document.getElementById('h-order-id').value      = '';
-    document.getElementById('h-product-id').value    = '';
-    document.getElementById('h-request-type').value  = '';
-    document.getElementById('h-reason').value        = '';
-    document.getElementById('h-contact-method').value = 'whatsapp';
-
-    document.getElementById('reason-detail').value = '';
-    document.getElementById('char-count').textContent = '0 / 1000 characters';
-    document.getElementById('exchange-options').style.display = 'none';
-
-    document.getElementById('c-name').value  = '';
-    document.getElementById('c-email').value = '';
-    document.getElementById('c-phone').value = '';
-    document.getElementById('agree-terms').checked = false;
-
-    document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
-
-    selectContact('whatsapp');
-}
-
-// ─── Re-apply selections from old POST on page reload after error ─────────────
-document.addEventListener('DOMContentLoaded', () => {
-    if (selectedOrderId)   selectOrder(selectedOrderId, selectedProductId, '');
-    if (selectedType)      selectType(selectedType);
-    if (selectedReason) {
-        const chip = Array.from(document.querySelectorAll('.reason-chip'))
-            .find(c => c.textContent.trim() === selectedReason);
-        if (chip) selectReason(chip, selectedReason);
-    }
-
-    const details = document.getElementById('reason-detail');
-    if (details) countChars(details, 'char-count');
-
-    const savedContact = document.getElementById('h-contact-method').value || 'whatsapp';
-    selectContact(savedContact);
-});
-</script>
 
 </body>
 </html>

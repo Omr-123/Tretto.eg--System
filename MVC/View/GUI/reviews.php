@@ -1,15 +1,20 @@
 <?php
-require_once __DIR__ . "/../../../db.php";
-require_once __DIR__ . "/../../Model/reviews.php";
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-$model = new ReviewModel($conn);
-$reviews = $model->getAllReviews();
-$userID = isset($_SESSION['userID']) ? (int) $_SESSION['userID'] : 0;
-$products = $model->getAllProducts($userID);
+if (!isset($reviews) || !isset($products)) {
+    require_once __DIR__ . '/../../../db.php';
+    require_once __DIR__ . '/../../Model/reviews.php';
+    $model = new ReviewModel($conn);
+    $reviews = $model->getAllReviews();
+    $userID = isset($_SESSION['userID']) ? (int) $_SESSION['userID'] : 0;
+    $products = $model->getAllProducts($userID);
+}
+
+$reviewError = $_SESSION['review_error'] ?? '';
+$reviewSuccess = $_SESSION['review_success'] ?? '';
+unset($_SESSION['review_error'], $_SESSION['review_success']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,6 +46,18 @@ $products = $model->getAllProducts($userID);
 
                 <div class="form-heading">Write a Review ✨</div>
                 <div class="form-subheading">Only for delivered orders.</div>
+
+                <?php if ($reviewSuccess): ?>
+                    <div class="success-msg" style="display:block;color:#1d9e75;margin-bottom:12px;">
+                        <?= htmlspecialchars($reviewSuccess) ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($reviewError): ?>
+                    <div class="error-msg" style="display:block;color:red;margin-bottom:12px;">
+                        <?= htmlspecialchars($reviewError) ?>
+                    </div>
+                <?php endif; ?>
 
                 <?php if (!isset($_SESSION['userID'])): ?>
 
@@ -90,7 +107,7 @@ $products = $model->getAllProducts($userID);
                             Please select a product, choose a star rating, and write your review.
                         </div>
 
-                        <button type="button" class="btn-primary" id="submit-btn" onclick="submitReview()">
+                        <button type="submit" class="btn-primary" id="submit-btn">
                             Submit Review ✨
                         </button>
 
@@ -152,34 +169,7 @@ $products = $model->getAllProducts($userID);
 
     <?php include 'component/footer.php'; ?>
     <script src="../javascript/all.js" defer></script>
-    <script>
-        let selectedRating = 0;
-
-        document.querySelectorAll('.star-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                selectedRating = parseInt(this.dataset.value);
-                document.getElementById('rating-input').value = selectedRating;
-                document.querySelectorAll('.star-btn').forEach(function (b) {
-                    b.classList.toggle('lit', parseInt(b.dataset.value) <= selectedRating);
-                });
-            });
-        });
-
-        function submitReview() {
-            const prodID = document.getElementById('product-id').value;
-            const body = document.getElementById('rev-body').value.trim();
-            const errBox = document.getElementById('rev-err');
-
-            if (!prodID || selectedRating === 0 || body === '') {
-                errBox.style.display = 'block';
-                return;
-            }
-
-            errBox.style.display = 'none';
-            document.getElementById('submit-btn').closest('form').submit();
-        }
-    </script>
-
+    <script src="../javascript/reviews.js" defer></script>
 </body>
 
 </html>

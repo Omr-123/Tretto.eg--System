@@ -2,9 +2,10 @@
    NAVBAR JAVASCRIPT - Animations & Interactions
    ======================================== */
 
-// Navbar scroll effect
+// Navbar scroll effect (skip on pages without #navbar, e.g. exchange.php)
 window.addEventListener('scroll', () => {
     const navbar = document.getElementById('navbar');
+    if (!navbar) return;
     if (window.scrollY > 60) {
         navbar.classList.add('sc');
     } else {
