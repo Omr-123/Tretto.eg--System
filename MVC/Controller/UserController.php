@@ -1,45 +1,45 @@
 <?php
-require_once (__DIR__ . '/../../db.php');
+require_once(__DIR__ . '/../../db.php');
 
-
-
-class UserController{
+class UserController
+{
     private $conn;
-    public function __construct(){
-        $db=new Database();
-        $this->conn=$db->getConnection();
-    }
-    public function Fav_Num($ID){
-        // Get cart ID
-    $query="SELECT COUNT(*) as total FROM favorties WHERE userID=:id";
-    $stmt=$this->conn->prepare($query);
-    $stmt->bindParam(':id',$ID);
-    return $result['total'] ?? 0;
-    }
-   public function cart_Number($ID) {
 
-    // Get cart ID
-    $query = "SELECT cartID FROM cart WHERE ID = :ID";
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':ID', $ID);
-    $stmt->execute();
-
-    $result = $stmt->fetch();
-
-    if (!$result) {
-        return 0;
+    public function __construct()
+    {
+        $db = new Database();
+        $this->conn = $db->getConnection();
     }
 
-    $cartID = $result['cartID'];
+    // Favorites count
+    public function Fav_Num($ID)
+    {
+        $query = "SELECT COUNT(favoriteID) as total FROM favorites WHERE userID = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $ID);
+        $stmt->execute();
 
-    // Get total quantity directly from DB
-    $query = "SELECT SUM(quantity) as total FROM cart_items WHERE cartID = :cartID";
-    $stmt = $this->conn->prepare($query);
-    $stmt->bindParam(':cartID', $cartID);
-    $stmt->execute();
+        $result = $stmt->fetch();
 
-    $result = $stmt->fetch();
+        return $result['total'] ?? 0;
+    }
 
-    return $result['total'] ?? 0;
-}
+    // Cart total quantity
+    public function cart_Number($ID)
+    {
+        $query = "
+            SELECT SUM(ci.quantity) as total
+            FROM cart c
+            JOIN cart_items ci ON c.cartID = ci.cartID
+            WHERE c.userID = :ID
+        ";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':ID', $ID);
+        $stmt->execute();
+
+        $result = $stmt->fetch();
+
+        return $result['total'] ?? 0;
+    }
 }

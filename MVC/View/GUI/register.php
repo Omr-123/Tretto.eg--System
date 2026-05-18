@@ -101,5 +101,6 @@ unset($_SESSION['old_input']);
         </div>
     </div>
 </body>
+    <script src="../js/auth.js"></script>
 
 </html>
