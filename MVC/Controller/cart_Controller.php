@@ -12,7 +12,6 @@ class Cart_Controller{
     public function __construct(){
         $database = new Databases();
         $this->cart_model=$database->getConnection();
-
     }
     public function getUserCart($user_id){
 
@@ -23,7 +22,7 @@ class Cart_Controller{
         $cartID = $stmt->fetch()['cartID'];
 
         if (!$cartID) {
-            $query = "INSERT INTO cart (ID) VALUES (:user_id)";
+            $query = "INSERT INTO cart (userID) VALUES (:user_id)";
             $stmt = $this->cart_model->prepare($query);
             $stmt->bindParam(':user_id', $user_id);
             $stmt->execute();
