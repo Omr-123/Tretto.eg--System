@@ -45,38 +45,54 @@ class AdminController
         }
     }
 
-    private function handleUpload(string $field = 'image_file'): string
-    {
-        if (empty($_FILES[$field]) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-            return trim($_POST['image'] ?? '');
-        }
-
-        if ($_FILES[$field]['error'] !== UPLOAD_ERR_OK) {
-            throw new RuntimeException('Image upload failed. Please try again.');
-        }
-
-        $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-        $original = $_FILES[$field]['name'] ?? 'image';
-        $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
-
-        if (!in_array($ext, $allowed, true)) {
-            throw new RuntimeException('Invalid image type. Allowed: jpg, jpeg, png, webp, gif.');
-        }
-
-        $dir = __DIR__ . '/../View/assets/images';
-        if (!is_dir($dir)) {
-            mkdir($dir, 0775, true);
-        }
-
-        $safeName = 'product_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-        $target = rtrim($dir, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $safeName;
-
-        if (!move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
-            throw new RuntimeException('Could not save uploaded image.');
-        }
-
-        return $safeName;
+   private function handleUpload(string $field = 'image_file'): string
+{
+    if (empty($_FILES[$field]) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return trim($_POST['image'] ?? '');
     }
+
+    if ($_FILES[$field]['error'] !== UPLOAD_ERR_OK) {
+        throw new RuntimeException('Image upload failed.');
+    }
+
+    $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+    $original = $_FILES[$field]['name'] ?? 'image';
+
+    // ✅ Extract extension
+    $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+
+    if (!in_array($ext, $allowed, true)) {
+        throw new RuntimeException('Invalid image type.');
+    }
+
+    // ✅ Clean filename (VERY IMPORTANT)
+    $baseName = pathinfo($original, PATHINFO_FILENAME);
+    $baseName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $baseName);
+
+    $safeName = $baseName . '.' . $ext;
+
+    // ✅ Correct path
+    $dir = __DIR__ . '/../assets/images/';
+    if (!is_dir($dir)) {
+        mkdir($dir, 0775, true);
+    }
+
+    $target = $dir . $safeName;
+
+    // ⚠️ Prevent overwrite (important)
+    $counter = 1;
+    while (file_exists($target)) {
+        $safeName = $baseName . '_' . $counter . '.' . $ext;
+        $target = $dir . $safeName;
+        $counter++;
+    }
+
+    if (!move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
+        throw new RuntimeException('Could not save uploaded image.');
+    }
+
+    return '../assets/images/' . $safeName;
+}
 
     private function productDataFromPost(): array
     {

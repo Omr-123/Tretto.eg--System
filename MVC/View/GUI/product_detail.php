@@ -24,7 +24,7 @@ if (isset($_GET['add_to_cart'])) {
     $prod->addToCart($_GET['add_to_cart'],$i+1,$product->price, $_SESSION['userID']);
 }
 if (isset($_GET['add_to_fav'])) {
-    $list->addToFav((int)$_GET['add_to_fav'], $_SESSION['userID']);
+    $prod->addToFav((int)$_GET['add_to_fav'], $_SESSION['userID']);
 }
 
 ?>
@@ -100,9 +100,13 @@ if (isset($_GET['add_to_fav'])) {
                         <div class="pd-actions" style="margin-top:20px">
                             <button class="btn-primary" id="pd-add-cart" onclick="addCartFromDetail()">Add to Cart
                                             🛍</button>
-                            <button class="btn-fav-lg" id="pd-fav-btn" onclick="toggleFavDetail()">♡</button>
-                        </div>
                     </form>
+                    <form method="GET" action="product_detail.php" class="prod-action-form">
+                        <input type="hidden" name="add_to_fav" value="<?= $product->pid ?>">
+                        <button class="btn-fav-lg" id="pd-fav-btn" type="submit" onclick="toggleFavDetail()">♡</button>
+                    </form>
+
+                        </div>
                         <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);display:flex;gap:20px">
                         <div style="font-size:12px;color:var(--muted)">🚚 Free delivery over 500 EGP</div>
                         <div style="font-size:12px;color:var(--muted)">🔄 14-day easy returns</div>

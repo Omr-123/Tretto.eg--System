@@ -36,7 +36,7 @@ admin_header('Dashboard', 'dashboard');
     <div class="card"><div class="card-head"><div class="card-title">All Products</div><button class="btn btn-rose" onclick="goTo('add-product')">➕ Add Product</button></div>
     <table><thead><tr><th>Image</th><th>ID</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Details</th><th>Actions</th></tr></thead><tbody>
     <?php foreach ($products as $p): $stock=(int)($p['stock'] ?? 0); $pid=(int)($p['PID'] ?? 0); ?><tr>
-        <td><img class="img-thumb" src="<?= h(admin_img_url($p['image'] ?? '')) ?>" alt="product"></td>
+        <td><img class="img-thumb" src="../<?= h(admin_img_url($p['image'] ?? '')) ?>" alt="product"></td>
         <td>#<?= $pid ?></td><td><strong><?= h($p['name'] ?? '') ?></strong>
         <div class="muted"><?= h(strlen($p['descriptions'] ?? '') > 45 ? substr($p['descriptions'], 0, 45) . '...' : ($p['descriptions'] ?? '')) ?></div>
     </td>
