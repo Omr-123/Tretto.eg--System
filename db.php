@@ -1,7 +1,7 @@
 
 <?php
 // Database.php
-class Database {
+class Databases {
     private $host = "localhost";
     private $db_name = "tretto";
     private $username = "root";

@@ -16,7 +16,7 @@ class product_variants {
     public $conn;
     
     public function __construct($data) {
-        $db = new Database();
+        $db = new Databases();
         $this->conn = $db->getConnection();
         $this->pvid = $data['pvid'] ?? null;
 

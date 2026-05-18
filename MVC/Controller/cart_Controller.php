@@ -12,7 +12,7 @@ class Cart_Controller{
     private $cart_model;
 
     public function __construct(){
-        $database = new Database();
+        $database = new Databases();
         $this->cart_model=$database->getConnection();
 
     }

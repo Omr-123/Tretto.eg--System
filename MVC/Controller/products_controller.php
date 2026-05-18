@@ -9,7 +9,7 @@ require_once __DIR__ . '/cart_Controller.php';
 class ProductsController{
 private $conn;
     public function __construct() {
-        $database = new Database();
+        $database = new Databases();
         $this->conn = $database->getConnection();
     }
     public function getAllProducts(){

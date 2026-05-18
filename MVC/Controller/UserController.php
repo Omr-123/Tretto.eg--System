@@ -9,7 +9,7 @@ class UserController
 
     public function __construct()
     {
-        $db = new Database();
+        $db = new Databases();
         $this->conn = $db->getConnection();
     }
     public function Fav_Num($ID){
