@@ -11,21 +11,23 @@ class Database {
     public function getConnection() {
         $this->conn = null;
 
-        try {
-            $this->conn = new PDO(
-                "mysql:host=" . $this->host . ";dbname=" . $this->db_name, 
-                $this->username, 
-                $this->password
-            );
-            // This line tells PHP to show errors if the SQL fails
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
-            $this->state = "Connection failed: " . $exception->getMessage();
-        }
-        $this->state = "Connection successful";
-        return $this->conn;
-    }
+  // Check connection
+          try {
+              $this->conn = new PDO(
+                  "mysql:host=" . $this->host . ";dbname=" . $this->db_name, 
+                  $this->username, 
+                  $this->password
+              );
+              // This line tells PHP to show errors if the SQL fails
+              $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+          } catch(PDOException $exception) {
+              echo "Connection error: " . $exception->getMessage();
+              $this->state = "Connection failed: " . $exception->getMessage();
+          }
+          $this->state = "Connection successful";
+          return $this->conn;
+      }
+  
 }
 
 $servername = "localhost";

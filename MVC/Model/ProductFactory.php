@@ -27,6 +27,7 @@ class ProductFactory {
                 return new Clogs($data); // or throw new Exception("Product type '$type' not recognized.");
         }
     }
+
 }
 
 

@@ -1,13 +1,38 @@
 <?php
+session_start();
 require_once __DIR__ . '/../../Controller/cart_Controller.php';
 require_once __DIR__ . '/../../Model/cart.php';
 require_once __DIR__ . '/../../Model/product.php';
 require_once __DIR__ . '/../../../db.php';
 $cartController = new Cart_Controller();
-$user_id = 1; // This should be dynamically set based on the logged-in user
-$cart_items = $cartController->get_cart_items($user_id);
-$subtotal=$cartController->Subtotal($user_id);
+if(!isset($_SESSION['userID'])){
+     header("Location:/Tretto.eg--System/MVC/View/GUI/login.php");
+}
+$user_id = $_SESSION['userID']; // This should be dynamically set based on the logged-in user
+if (isset($_GET['update_cart']) && isset($_GET['action'])) {
+    $action = $_GET['action'];
+    $prod_ID = (int)$_GET['PID'];
+    $quantity = (int)$_GET['quantity'];
+    $pvid = isset($_GET['pvid']) ? (int)$_GET['pvid'] : null;
 
+    $cartController->handleCartAction($user_id, $action, $prod_ID, $quantity, $pvid);
+}
+
+if(isset($_GET['update_cart']) && isset($_GET['-'])){
+    $cartController->update_cart_item($user_id, (int)$_GET['PID'], (int)$_GET['quantity']-1);
+    
+}
+if(isset($_GET['update_cart']) && isset($_GET['+'])){
+    $cartController->update_cart_item($user_id, (int)$_GET['PID'], (int)$_GET['quantity']+1);
+    var_dump($_GET['quantity']);
+}
+if(isset($_GET['update_cart']) && isset($_GET['remove']) && isset($_GET['pvid'])){
+    $cartController->remove_from_cart($user_id, (int)$_GET['PID'],(int)$_GET['pvid']);
+}
+$cart_items = $cartController->get_cart_items($user_id);
+$cart_info=$cartController->get_cart_info($user_id);
+$subtotal=1;
+$ct=-1;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +48,7 @@ $subtotal=$cartController->Subtotal($user_id);
 </head>
 <body>
     <?php include 'component/navbar.php'; ?>
-    
+
    <div class="page" id="page-cart">
         <div class="page-header">
             <div class="sec-tag">🛍 Shopping</div>
@@ -34,22 +59,29 @@ $subtotal=$cartController->Subtotal($user_id);
             <div class="cart-layout">
                 <!-- CART ITEMS -->
                 <div>
-                    <?php foreach ($cart_items as $item): ?>
+                    <?php foreach ($cart_items as $item ): $ct=$ct+1 ;?>
                     <!-- CART ITEM 1 -->
                     <div class="cart-item-row">
                         <div class="ci-img">
-                            <img src="<?= $item->image; ?>" alt="<?= $item->name; ?>">
+                            <img src="<?= $item->variants[0]->img_url[0]; ?>" alt="<?= $item->name; ?>">
                         </div>
                         <div class="ci-inf">
-                            <div class="ci-name">1</div>
-                            <div class="ci-var">Size: 38 · Denim Blue</div>
-                            <div class="ci-qty">
-                                <button class="qty-b" >-</button>
-                                <span class="qty-n">3</span>
-                                <button class="qty-b" >+</button>
-                            </div>
+                            <div class="ci-name"><?= $item->name; ?></div>
+                            <div class="ci-var"><?= $item->variants[$cart_info[$ct]['pvid']-1]->size ?? 'N/A'; ?></div>
+                            <form method="GET" action="cart.php">
+                                <input type="hidden" name="update_cart" value="1">
+                                <input type="hidden" name="PID" value="<?= $item->pid; ?>">
+                                <input type="hidden" name="quantity" value="<?= $cart_info[$ct]['quantity']; ?>">
+                                <input type="hidden" name="pvid" value="<?= $cart_info[$ct]['pvid']; ?>">
+                                <div class="ci-qty">
+                                    <button class="qty-b" type="submit" name="action" value="decrease">-</button>
+                                    <span class="qty-n"><?= $cart_info[$ct]['quantity']; ?></span>
+                                    <button class="qty-b" type="submit" name="action" value="increase">+</button>
+                                    <button class="btn-ghost" type="submit" name="action" value="remove" style="margin-left:8px;font-size:11px;color:var(--rose)">Remove</button>                                </div>
+                            </form>
                         </div>
-                        <div class="ci-pr"><?= $item->price; ?> EGP</div>
+
+                        <div class="ci-pr"><?= $cartController->getPrice($item->price, ($item->variants[$cart_info[$ct]['pvid']-1]->add_price ?? 0),$cart_info[$ct]['quantity']); ?> EGP</div>
                     </div>
                     <?php endforeach; ?>
                     
@@ -61,22 +93,23 @@ $subtotal=$cartController->Subtotal($user_id);
                     
                     <div class="cs-row">
                         <span>Subtotal</span>
-                        <span><?= $subtotal;?> EGP</span>
+                        <span><?= $cartController->Subtotal($user_id);?> EGP</span>
                     </div>
                     
                     <div class="cs-row">
                         <span>Shipping</span>
+
                         <span>70 EGP</span>
                     </div>
                     
                     <div class="cs-row">
                         <span>Tax (14%)</span>
-                        <span>646 EGP</span>
+                        <span><?= $cartController->Subtotal($user_id) * 0.4;?> EGP</span>
                     </div>
                     
                     <div class="cs-row total">
                         <span>Total</span>
-                        <span>5,046 EGP</span>
+                        <span><?= $cartController->Subtotal($user_id)*1.4?>EGP</span>
                     </div>
                     
                     <p class="cs-note">✨ Free shipping on orders over 2,000 EGP</p>
