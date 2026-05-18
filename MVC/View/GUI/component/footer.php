@@ -20,10 +20,10 @@
                 <div class="ft-col-title">Account</div>
                 <ul class="ft-links">
                     <li><a onclick="goTo('login')">Sign In</a></li>
-                    <li><a onclick="goTo('cart')">My Cart 🛍</a></li>
-                    <li><a onclick="goTo('favorites')">Wishlist 💕</a></li>
+                    <li><a onclick="goTo('cart')">Cart </a></li>
+                    <li><a onclick="goTo('favorites')">Favorites </a></li>
                     <li><a onclick="goTo('track')">Track Order</a></li>
-                    <li><a onclick="goTo('reviews.php')">Reviews ⭐</a></li>
+                    <li><a onclick="goTo('reviews.php')">Reviews </a></li>
                 </ul>
             </div>
             <div>

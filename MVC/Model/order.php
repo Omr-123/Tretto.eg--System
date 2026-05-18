@@ -41,7 +41,6 @@ class Order
         }
         return null;
     }
-
     public static function getItems($conn, $orderID)
     {
         $orderID = (int) $orderID;

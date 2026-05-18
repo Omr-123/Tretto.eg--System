@@ -1,16 +1,24 @@
 <?php
-if (session_status() === PHP_SESSION_NONE)
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
+}
 
 if (!empty($_SESSION['logged_in'])) {
     header('Location: /Tretto.eg--System/MVC/View/GUI/index.php');
     exit;
 }
-$authError = $_SESSION['auth_error'] ?? '';
-$authSuccess = $_SESSION['auth_success'] ?? '';
-unset($_SESSION['auth_error'], $_SESSION['auth_success']);
+
+$fieldErrors = $_SESSION['field_errors'] ?? [];
+$globalError = $fieldErrors['_global'] ?? '';
+unset($_SESSION['field_errors']);
+
 $old = $_SESSION['old_input'] ?? [];
 unset($_SESSION['old_input']);
+
+function fieldClass(string $key, array $errors): string
+{
+    return isset($errors[$key]) ? 'input-error' : '';
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -37,56 +45,69 @@ unset($_SESSION['old_input']);
                 <h2 class="auth-form-title">Register</h2>
                 <p class="auth-form-sub">Fill in your details to get started</p>
 
-                <form method="POST" action="/Tretto.eg--System/MVC/Controller/AuthController.php">
+                <form id="register-form" method="POST" action="/Tretto.eg--System/MVC/Controller/AuthController.php" novalidate>
                     <input type="hidden" name="action" value="register">
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label class="form-label">First Name</label>
-                            <input class="form-input" name="fname" id="reg-fname" type="text" placeholder="Sara"
-                                value="<?= $old['fname'] ?? '' ?>" required>
+                            <label class="form-label" for="reg-fname">First Name</label>
+                            <input class="form-input <?= fieldClass('fname', $fieldErrors) ?>" name="fname" id="reg-fname"
+                                type="text" placeholder="Sara" value="<?= htmlspecialchars($old['fname'] ?? '') ?>"
+                                autocomplete="given-name">
+                            <div class="error-msg" id="reg-fname-err" role="alert"
+                                <?= isset($fieldErrors['fname']) ? '' : 'style="display:none"' ?>>
+                                <?= htmlspecialchars($fieldErrors['fname'] ?? '') ?>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Last Name</label>
-                            <input class="form-input" name="lname" id="reg-lname" type="text" placeholder="Ahmed"
-                                value="<?= $old['lname'] ?? '' ?>" required>
+                            <label class="form-label" for="reg-lname">Last Name</label>
+                            <input class="form-input <?= fieldClass('lname', $fieldErrors) ?>" name="lname" id="reg-lname"
+                                type="text" placeholder="Ahmed" value="<?= htmlspecialchars($old['lname'] ?? '') ?>"
+                                autocomplete="family-name">
+                            <div class="error-msg" id="reg-lname-err" role="alert"
+                                <?= isset($fieldErrors['lname']) ? '' : 'style="display:none"' ?>>
+                                <?= htmlspecialchars($fieldErrors['lname'] ?? '') ?>
+                            </div>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input class="form-input" name="email" id="reg-email" type="email" placeholder="your@email.com"
-                            value="<?= $old['email'] ?? '' ?>" required>
-                        <div class="error-msg" id="reg-email-err"
-                            style="<?= $authError === 'email' ? '' : 'display:none' ?>">
-                            This email is already registered or invalid.
+                        <label class="form-label" for="reg-email">Email Address</label>
+                        <input class="form-input <?= fieldClass('email', $fieldErrors) ?>" name="email" id="reg-email"
+                            type="email" placeholder="your@email.com"
+                            value="<?= htmlspecialchars($old['email'] ?? '') ?>" autocomplete="email">
+                        <div class="error-msg" id="reg-email-err" role="alert"
+                            <?= isset($fieldErrors['email']) ? '' : 'style="display:none"' ?>>
+                            <?= htmlspecialchars($fieldErrors['email'] ?? '') ?>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Phone Number</label>
-                        <input class="form-input" name="phone" id="reg-phone" type="tel" placeholder="01xxxxxxxxx"
-                            value="<?= $old['phone'] ?? '' ?>">
-                        <div class="error-msg" id="reg-phone-err"
-                            style="<?= $authError === 'phone' ? '' : 'display:none' ?>">
-                            Please enter a valid Egyptian phone number.
+                        <label class="form-label" for="reg-phone">Phone Number</label>
+                        <input class="form-input <?= fieldClass('phone', $fieldErrors) ?>" name="phone" id="reg-phone"
+                            type="tel" placeholder="01xxxxxxxxx"
+                            value="<?= htmlspecialchars($old['phone'] ?? '') ?>" autocomplete="tel">
+                        <div class="error-msg" id="reg-phone-err" role="alert"
+                            <?= isset($fieldErrors['phone']) ? '' : 'style="display:none"' ?>>
+                            <?= htmlspecialchars($fieldErrors['phone'] ?? '') ?>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input class="form-input" name="password" id="reg-pass" type="password"
-                            placeholder="Min. 8 characters" required>
-                        <div class="error-msg" id="reg-pass-err"
-                            style="<?= $authError === 'password' ? '' : 'display:none' ?>">
-                            Password must be at least 8 characters.
+                        <label class="form-label" for="reg-pass">Password</label>
+                        <input class="form-input <?= fieldClass('password', $fieldErrors) ?>" name="password"
+                            id="reg-pass" type="password" placeholder="Min. 8 characters" autocomplete="new-password">
+                        <div class="error-msg" id="reg-pass-err" role="alert"
+                            <?= isset($fieldErrors['password']) ? '' : 'style="display:none"' ?>>
+                            <?= htmlspecialchars($fieldErrors['password'] ?? '') ?>
                         </div>
                     </div>
 
-                    <div class="error-msg" id="reg-global-err"
-                        style="margin-bottom:12px;<?= ($authError && $authError !== 'email' && $authError !== 'phone' && $authError !== 'password') ? '' : 'display:none' ?>">
-                        <?= $authError ?>
-                    </div>
+                    <?php if ($globalError): ?>
+                        <div class="error-msg" id="reg-global-err" role="alert" style="margin-bottom:12px">
+                            <?= htmlspecialchars($globalError) ?>
+                        </div>
+                    <?php endif; ?>
 
                     <button class="btn-primary" type="submit" style="width:100%">
                         Create My Account ✨
@@ -97,10 +118,9 @@ unset($_SESSION['old_input']);
                     Already have an account? <a href="/Tretto.eg--System/MVC/View/GUI/login.php">Sign In</a>
                 </div>
             </div>
-
         </div>
     </div>
+    <script src="../javascript/auth.js"></script>
 </body>
-    <script src="../js/auth.js"></script>
 
 </html>

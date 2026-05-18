@@ -14,31 +14,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $cartData = Checkout::getCartItems($userID);
     $cartItems = $cartData['items'];
     $total = $cartData['total'];
-    include(__DIR__ . '/../View/GUI/checkout.php');
+
+    if (empty($cartItems)) {
+        header('Location: /Tretto.eg--System/MVC/View/GUI/cart.php');
+        exit;
+    }
+
+    $user = [
+        'firstName' => $_SESSION['firstName'] ?? '',
+        'lastName' => $_SESSION['lastName'] ?? '',
+        'email' => $_SESSION['email'] ?? '',
+        'phone' => $_SESSION['phone'] ?? '',
+    ];
+
+    unset($_SESSION['checkout_error']);
+    include __DIR__ . '/../View/GUI/checkout.php';
     exit;
 }
 
+$firstName = trim($_POST['firstName'] ?? '');
+$lastName = trim($_POST['lastName'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$phone = trim($_POST['phone'] ?? '');
 $shippingAddress = trim($_POST['street'] ?? '');
 $city = trim($_POST['city'] ?? '');
 $governorate = trim($_POST['governorate'] ?? '');
 $building = trim($_POST['building'] ?? '');
-$deliveryDate = trim($_POST['deliveryDate'] ?? '');
-$paymentMethod = trim($_POST['paymentMethod'] ?? '');
 
-if (empty($shippingAddress) || empty($city) || empty($governorate) || empty($building) || empty($deliveryDate) || empty($paymentMethod)) {
+if (
+    empty($firstName) || empty($lastName) || empty($email) || empty($phone) ||
+    empty($shippingAddress) || empty($city) || empty($governorate) || empty($building)
+) {
     $_SESSION['checkout_error'] = 'Please fill in all fields.';
-    $_SESSION['old_checkout'] = $_POST;
     header('Location: checkout_Controller.php');
     exit;
 }
 
-$result = Checkout::placeOrder($userID, $shippingAddress, $city, $governorate, $building, $deliveryDate, $paymentMethod);
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $_SESSION['checkout_error'] = 'Please enter a valid email address.';
+    header('Location: checkout_Controller.php');
+    exit;
+}
+
+$result = Checkout::saveCheckout($userID, $shippingAddress, $city, $governorate, $building);
+
 
 if (!$result['success']) {
     $_SESSION['checkout_error'] = $result['error'];
     header('Location: checkout_Controller.php');
     exit;
 }
+$_SESSION['checkoutID'] = $result['checkoutID'];
+unset($_SESSION['checkout_error']);
 
-header('Location: placeorder_controller.php?id=' . $result['orderID']);
+header('Location: /Tretto.eg--System/MVC/View/GUI/payment.php');
 exit;

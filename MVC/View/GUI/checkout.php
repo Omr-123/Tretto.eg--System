@@ -39,37 +39,34 @@ if (!isset($cartItems) || !isset($total)) {
         <div class="page-wrap">
             <div class="checkout-layout">
                 <div>
-                    <!-- Contact Information -->
-                    <div class="checkout-form-box">
-                        <div class="co-section-title">Contact Information</div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">First Name</label>
-                                <input class="form-input" name="firstName" placeholder="Enter your first name"
-                                    value="<?= htmlspecialchars($user['firstName'] ?? '') ?>">
+                    <form method="POST" action="/Tretto.eg--System/MVC/Controller/checkout_Controller.php">
+                        <div class="checkout-form-box">
+                            <div class="co-section-title">Contact Information</div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">First Name</label>
+                                    <input class="form-input" name="firstName" placeholder="Enter your first name"
+                                        value="<?= htmlspecialchars($user['firstName'] ?? '') ?>">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Last Name</label>
+                                    <input class="form-input" name="lastName" placeholder="Enter your last name"
+                                        value="<?= htmlspecialchars($user['lastName'] ?? '') ?>">
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Last Name</label>
-                                <input class="form-input" name="lastName" placeholder="Enter your last name"
-                                    value="<?= htmlspecialchars($user['lastName'] ?? '') ?>">
+                                <label class="form-label">Email</label>
+                                <input class="form-input" type="email" name="email" placeholder="your@email.com"
+                                    value="<?= htmlspecialchars($user['email'] ?? '') ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Phone</label>
+                                <input class="form-input" name="phone" placeholder="01xxxxxxxxx"
+                                    value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input class="form-input" type="email" name="email" placeholder="your@email.com"
-                                value="<?= htmlspecialchars($user['email'] ?? '') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Phone</label>
-                            <input class="form-input" name="phone" placeholder="01xxxxxxxxx"
-                                value="<?= htmlspecialchars($user['phone'] ?? '') ?>">
-                        </div>
-                    </div>
-
-                    <!-- Shipping Address -->
-                    <div class="checkout-form-box" style="margin-top:20px">
-                        <div class="co-section-title">Shipping Address 📍</div>
-                        <form method="POST" action="/Tretto.eg--System/MVC/Controller/checkout_Controller.php">
+                        <div class="checkout-form-box" style="margin-top:20px">
+                            <div class="co-section-title">Shipping Address 📍</div>
                             <div class="form-group">
                                 <label class="form-label">Governorate</label>
                                 <select class="form-input" name="governorate">
@@ -94,17 +91,19 @@ if (!isset($cartItems) || !isset($total)) {
                                 <label class="form-label">Building / Apartment</label>
                                 <input class="form-input" name="building" placeholder="Building 5, Apt 3">
                             </div>
+
                             <?php if (!empty($_SESSION['checkout_error'])): ?>
-                                <div class="error-msg" id="co-err" style="margin-bottom:12px">
+                                <div class="error-msg" style="margin-bottom:12px">
                                     <?= htmlspecialchars($_SESSION['checkout_error']) ?>
                                 </div>
+                                <?php unset($_SESSION['checkout_error']); ?>
                             <?php endif; ?>
-                            <button type="submit" class="btn-primary">Continue to Payment 💳</button>
-                        </form>
-                    </div>
-                </div>
 
-                <!-- Order Summary -->
+                            <button type="submit" class="btn-primary">Continue to Payment 💳</button>
+                        </div>
+
+                    </form>
+                </div>
                 <div class="order-mini">
                     <div class="order-mini-title">Your Order 🛍</div>
                     <?php if (!empty($cartItems)): ?>

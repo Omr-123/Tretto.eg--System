@@ -28,19 +28,29 @@ class UserModel
 
     public function findByEmail($email)
     {
-        $email = $this->conn->real_escape_string($email);
-        $result = $this->conn->query(
+        $stmt = $this->conn->prepare(
             "SELECT userID, name, email, phone, password, role,
                     address, city, country, registrationDate
              FROM users
-             WHERE email = '$email'
+             WHERE email = ?
              LIMIT 1"
         );
 
-        if (!$result || $result->num_rows === 0)
+        if (!$stmt) {
             return false;
+        }
+
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if (!$result || $result->num_rows === 0) {
+            $stmt->close();
+            return false;
+        }
 
         $row = $result->fetch_assoc();
+        $stmt->close();
 
         $user = new User();
         $user->userID = (int) $row['userID'];
@@ -54,31 +64,50 @@ class UserModel
         $user->country = $row['country'];
         $user->registrationDate = $row['registrationDate'];
         $user->created_at = $row['registrationDate'];
-    
+
         return $user;
     }
 
     public function createUser($data)
     {
-        $name = $this->conn->real_escape_string($data['name']);
-        $email = $this->conn->real_escape_string($data['email']);
-        $phone = $this->conn->real_escape_string($data['phone'] ?? '');
-        $password = $this->conn->real_escape_string($data['password']);
-        $role = $this->conn->real_escape_string($data['user_type'] ?? 'user');
-
-        return $this->conn->query(
+        $stmt = $this->conn->prepare(
             "INSERT INTO users (name, email, phone, password, role)
-             VALUES ('$name', '$email', '$phone', '$password', '$role')"
+             VALUES (?, ?, ?, ?, ?)"
         );
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $name = $data['name'];
+        $email = $data['email'];
+        $phone = $data['phone'] ?? '';
+        $password = $data['password'];
+        $role = $data['user_type'] ?? 'user';
+
+        $stmt->bind_param('sssss', $name, $email, $phone, $password, $role);
+        $ok = $stmt->execute();
+        $stmt->close();
+
+        return $ok;
     }
 
     public function emailExists($email)
     {
-        $email = $this->conn->real_escape_string($email);
-        $result = $this->conn->query(
-            "SELECT COUNT(*) AS cnt FROM users WHERE email = '$email'"
+        $stmt = $this->conn->prepare(
+            "SELECT COUNT(*) AS cnt FROM users WHERE email = ?"
         );
+
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
         $row = $result->fetch_assoc();
-        return (int) $row['cnt'] > 0;
+        $stmt->close();
+
+        return (int) ($row['cnt'] ?? 0) > 0;
     }
 }

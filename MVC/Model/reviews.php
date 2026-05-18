@@ -1,14 +1,20 @@
 <?php
 class ReviewModel
 {
-    private $conn;
+    private mysqli $conn;
+    private string $lastError = '';
 
-    public function __construct($conn)
+    public function __construct(mysqli $conn)
     {
         $this->conn = $conn;
     }
 
-    public function getAllReviews()
+    public function getLastError(): string
+    {
+        return $this->lastError;
+    }
+
+    public function getAllReviews(): array
     {
         $result = $this->conn->query("
             SELECT 
@@ -25,47 +31,71 @@ class ReviewModel
             ORDER BY r.reviewDate DESC
         ");
 
+        if (!$result) {
+            $this->lastError = $this->conn->error;
+            return [];
+        }
+
         $reviews = [];
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $reviews[] = $row;
-            }
+        while ($row = $result->fetch_assoc()) {
+            $reviews[] = $row;
         }
         return $reviews;
     }
 
-    public function addReview($prod_ID, $userID, $rating, $comment)
+    public function addReview(int $prod_ID, int $userID, float $rating, string $comment): bool
     {
-        $comment = $this->conn->real_escape_string($comment);
+        $stmt = $this->conn->prepare(
+            'INSERT INTO review (prod_ID, userID, rating, comment) VALUES (?, ?, ?, ?)'
+        );
 
-        $result = $this->conn->query("
-            INSERT INTO review (prod_ID, userID, rating, comment)
-            VALUES ($prod_ID, $userID, $rating, '$comment')
-        ");
+        if (!$stmt) {
+            $this->lastError = $this->conn->error;
+            return false;
+        }
 
-        return $result;
+        $stmt->bind_param('iids', $prod_ID, $userID, $rating, $comment);
+        $ok = $stmt->execute();
+
+        if (!$ok) {
+            $this->lastError = $stmt->error;
+        }
+
+        $stmt->close();
+        return $ok;
     }
 
-    public function getAllProducts($userID)
+    public function getAllProducts(int $userID): array
     {
-        $result = $this->conn->query("
+        if ($userID <= 0) {
+            return [];
+        }
+
+        $stmt = $this->conn->prepare("
             SELECT DISTINCT p.PID AS prod_ID, p.name
             FROM product p
             INNER JOIN order_items oi ON oi.PID = p.PID
             INNER JOIN orders o ON o.orderID = oi.orderID
-            WHERE o.userID = $userID
+            WHERE o.userID = ?
             AND o.status = 'Delivered'
-            GROUP BY p.PID, p.name
             ORDER BY p.name ASC
         ");
 
-        $products = [];
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $products[] = $row;
-            }
+        if (!$stmt) {
+            $this->lastError = $this->conn->error;
+            return [];
         }
+
+        $stmt->bind_param('i', $userID);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $products = [];
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+        }
+
+        $stmt->close();
         return $products;
     }
 }
-?>

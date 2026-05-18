@@ -15,11 +15,6 @@ class ExchangeController
         $this->model = new ExchangeModel();
         $this->currentUserID = (int) ($_SESSION['userID'] ?? 0);
     }
-
-    // -------------------------------------------------------------------------
-    // PAGE LOAD
-    // -------------------------------------------------------------------------
-
     public function loadPage(): array
     {
         $orders = $this->model->getDeliveredOrdersByUser($this->currentUserID);
@@ -34,12 +29,14 @@ class ExchangeController
                     'order_id' => $orderID,
                     'product_id' => $item['product_id'],
                     'product_name' => $item['product_name'],
-                    'product_image' => $item['product_image'],
+                    'product_image' => self::normalizeImagePath($item['product_image'] ?? ''),
                     'price' => $item['price'],
                     'delivery_date' => $item['delivery_date'],
-                    'variant' =>
-    $item['category'] . ' — ' .
-    mb_substr($item['product_description'] ?? '', 0, 60),
+                    'variant' => trim(
+                        ($item['category'] ?? '') . ' — ' .
+                        mb_substr($item['description'] ?? '', 0, 60),
+                        ' — '
+                    ),
                 ];
             }
         }
@@ -47,13 +44,11 @@ class ExchangeController
         return [
             'orders' => $displayRows,
             'products' => $this->model->getAvailableProducts(),
+            'sizes' => $this->model->getGlobalSizes(),
+            'colors' => $this->model->getGlobalColors(),
+            'variants_by_product' => $this->model->getVariantsByProduct(),
         ];
     }
-
-    // -------------------------------------------------------------------------
-    // FORM SUBMIT  (normal POST — no JSON)
-    // -------------------------------------------------------------------------
-
     public function handleSubmit(): array
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -94,34 +89,43 @@ class ExchangeController
             'contact_method' => $raw['contact_method'],
         ];
 
-        $requestID = $this->model->createExchangeRequest($data);
+        $savedMeta = $this->model->saveRequest($data);
 
-        if (!$requestID) {
-            return ['success' => false, 'message' => 'Could not save your request. Please try again.'];
+        if (!$savedMeta) {
+            return [
+                'success' => false,
+                'message' => 'Could not save your request. Please try again.',
+            ];
         }
 
-        $saved = $this->model->getExchangeRequestByID($requestID);
+        $type = $savedMeta['type'];
+        $requestID = $savedMeta['id'];
+
+        $saved = $this->model->getSavedRequest(
+            $type,
+            $requestID,
+            (int) $data['old_product_id']
+        );
 
         if (!$saved) {
             return ['success' => false, 'message' => 'Request saved but could not be retrieved.'];
         }
 
+        $prefix = $type === 'refund' ? 'REF' : 'EXC';
+        $reasonLine = (string) ($data['reason'] ?? '');
+        $createdAt = $saved['created_at'] ?? 'now';
+
         return [
             'success' => true,
-            'reference' => 'REF-' . date('Ymd') . '-' . str_pad($requestID, 4, '0', STR_PAD_LEFT),
-            'request_type' => $saved['request_type'],
-            'product_name' => $saved['old_product_name'],
-            'reason' => $saved['reason'],
+            'reference' => $prefix . '-' . date('Ymd') . '-' . str_pad((string) $requestID, 4, '0', STR_PAD_LEFT),
+            'request_type' => $type,
+            'product_name' => $saved['old_product_name'] ?? '',
+            'reason' => $reasonLine,
             'order_id' => $saved['order_ref'],
-            'submitted_at' => date('d M Y, H:i', strtotime($saved['created_at'])),
-            'contact' => $saved['contact_method'],
+            'submitted_at' => date('d M Y, H:i', strtotime($createdAt)),
+            'contact' => $data['contact_method'],
         ];
     }
-
-    // -------------------------------------------------------------------------
-    // VALIDATION
-    // -------------------------------------------------------------------------
-
     private function validate(array $data): array
     {
         $errors = [];
@@ -152,5 +156,29 @@ class ExchangeController
             $errors['preferred_size'] = 'Invalid size value.';
 
         return $errors;
+    }
+
+    private static function normalizeImagePath(string $path): string
+    {
+        $path = trim(str_replace('\\', '/', $path));
+        $placeholder = 'assets/images/placeholder.svg';
+
+        if ($path === '') {
+            return $placeholder;
+        }
+        if (preg_match('#^https?://#i', $path)) {
+            return $path;
+        }
+        if (str_starts_with($path, 'assets/')) {
+            return $path;
+        }
+        if (str_starts_with($path, '/Tretto.eg--System/MVC/View/GUI/')) {
+            return substr($path, strlen('/Tretto.eg--System/MVC/View/GUI/'));
+        }
+        if (str_starts_with($path, '../')) {
+            return ltrim(preg_replace('#^\.\./+#', '', $path), '/');
+        }
+
+        return 'assets/images/' . ltrim($path, '/');
     }
 }

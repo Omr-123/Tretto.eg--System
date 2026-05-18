@@ -1,18 +1,27 @@
 <?php
-require_once(__DIR__ . '/../../../db.php');
-require_once(__DIR__ . '/../../Model/order.php');
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/../../../db.php';
+require_once __DIR__ . '/../../Model/order.php';
+
+if (empty($_SESSION['logged_in']) || empty($_SESSION['userID'])) {
+    header('Location: /Tretto.eg--System/MVC/View/GUI/login.php');
+    exit;
+}
 
 $orderID = isset($_GET['id']) ? (int) $_GET['id'] : 0;
 
 if ($orderID <= 0) {
-    header("Location: index.php");
-    exit();
+    header('Location: /Tretto.eg--System/MVC/View/GUI/index.php');
+    exit;
 }
 
 $order = Order::getById($conn, $orderID);
-if (!$order) {
-    header("Location: index.php");
-    exit();
+if (!$order || (int) $order->userID !== (int) $_SESSION['userID']) {
+    header('Location: /Tretto.eg--System/MVC/View/GUI/index.php');
+    exit;
 }
 
 $orderItems = Order::getItems($conn, $orderID);
@@ -105,7 +114,7 @@ $orderItems = Order::getItems($conn, $orderID);
                     style="text-decoration:none; display:inline-block; width:100%; text-align:center;">
                     Continue Shopping 🛍
                 </a>
-                <a href="review.php?order_id=<?php echo $order->orderID ?? 0; ?>" class="btn-ghost"
+                <a href="reviews.php?order_id=<?php echo $order->orderID ?? 0; ?>" class="btn-ghost"
                     style="text-decoration:none; display:inline-block; width:100%; text-align:center;">
                     Write a Review ⭐
                 </a>

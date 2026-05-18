@@ -131,3 +131,44 @@
             cursor: none;
             text-decoration: none
         }
+
+        .error-msg {
+            font-size: 13px;
+            color: red;
+            margin-top: 6px;
+            font-weight: 500;
+            display: block;
+        }
+
+        #page-login .error-msg,
+        #page-register .error-msg {
+            color: red;
+        }
+
+        #page-login .login-error-box {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .success-msg {
+            font-size: 13px;
+            color: #1d9e75;
+            font-weight: 500;
+        }
+
+        #page-login .success-msg {
+            margin-bottom: 12px;
+        }
+
+        .form-input.input-error {
+            border-color: #e24b4a !important;
+            background: #fcebeb !important;
+            outline: none;
+        }
+
+        .form-input.input-ok {
+            border-color: #1d9e75 !important;
+            background: #e1f5ee !important;
+            outline: none;
+        }

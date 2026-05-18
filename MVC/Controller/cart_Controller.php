@@ -1,12 +1,10 @@
 <?php
-
 require_once (__DIR__ . '/../Model/cart.php');
 require_once (__DIR__ . '/../Model/product.php');
 require_once (__DIR__ . '/../Model/ProductFactory.php');
 require_once (__DIR__ . '/products_controller.php');
 require_once (__DIR__ . '/../../db.php');
 require_once('products_controller.php');
-
 
 class Cart_Controller{
     private $cart_model;

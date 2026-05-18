@@ -1,17 +1,41 @@
 <?php
-if (session_status() === PHP_SESSION_NONE)
-    session_start();
+ob_start();
 
-if (!empty($_SESSION['logged_in'])) {
+require_once __DIR__ . '/../../Controller/AuthController.php';
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+$authError = '';
+$old = ['email' => ''];
+$authSuccess = $_SESSION['auth_success'] ?? '';
+unset($_SESSION['auth_success']);
+
+$formAction = '/Tretto.eg--System/MVC/View/GUI/login.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
+    $result = (new AuthController())->processLogin($_POST);
+
+    if ($result['success']) {
+        ob_end_clean();
+        header('Location: ' . $result['redirect']);
+        exit;
+    }
+
+    $authError = $result['authError'];
+    $old = $result['old'];
+} elseif (!empty($_SESSION['logged_in'])) {
+    ob_end_clean();
     $role = $_SESSION['user_type'] ?? 'user';
     $redirect = ($role === 'admin')
         ? '/Tretto.eg--System/MVC/View/GUI/admin-dashboard.php'
         : '/Tretto.eg--System/MVC/View/GUI/index.php';
-    header("Location: $redirect");
+    header('Location: ' . $redirect);
     exit;
 }
-$authError = $_SESSION['auth_error'] ?? '';
-unset($_SESSION['auth_error']);
+
+ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,7 +50,6 @@ unset($_SESSION['auth_error']);
 </head>
 
 <body>
-
     <div class="page" id="page-login">
         <div class="auth-wrap">
             <div class="auth-side">
@@ -37,27 +60,34 @@ unset($_SESSION['auth_error']);
             <div class="auth-form">
                 <div class="auth-form-tag">💗 Sign In</div>
                 <h2 class="auth-form-title">Login</h2>
-                <p class="auth-form-sub">Enter your credentials to continue</p>
 
-                <form method="POST" action="/Tretto.eg--System/MVC/Controller/AuthController.php">
-                    <input type="hidden" name="action" value="login">
+                <?php if ($authSuccess): ?>
+                    <div class="success-msg" style="color:#1d9e75;margin-bottom:12px;">
+                        <?= htmlspecialchars($authSuccess) ?>
+                    </div>
+                <?php endif; ?>
+
+                <form method="POST" action="<?= htmlspecialchars($formAction) ?>">
+                    <div class="form-group">
+                        <label class="form-label" for="log-email">Email Address</label>
+                        <input class="form-input<?= $authError !== '' ? ' input-error' : '' ?>" id="log-email"
+                            name="email" type="email" placeholder="your@email.com"
+                            value="<?= htmlspecialchars($old['email'] ?? '') ?>" autocomplete="email" required>
+                    </div>
 
                     <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input class="form-input" id="log-email" name="email" type="email" placeholder="your@email.com"
-                            value="<?= $_POST['email'] ?? '' ?>" required>
+                        <label class="form-label" for="log-pass">Password</label>
+                        <input class="form-input<?= $authError !== '' ? ' input-error' : '' ?>" id="log-pass"
+                            name="password" type="password" placeholder="••••••••"
+                            autocomplete="current-password" required>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input class="form-input" id="log-pass" name="password" type="password" placeholder="••••••••"
-                            required>
-                    </div>
-
-                    <div class="error-msg" id="log-err"
-                        style="margin-bottom:12px;<?= $authError ? '' : 'display:none' ?>">
-                        <?= $authError ?>
-                    </div>
+                    <?php if ($authError !== ''): ?>
+                        <div class="error-msg login-error-box" role="alert"
+                            style="display:block;color:red;margin-bottom:12px;font-weight:500;">
+                            <?= htmlspecialchars($authError) ?>
+                        </div>
+                    <?php endif; ?>
 
                     <button class="btn-primary" type="submit" style="width:100%;margin-bottom:14px">
                         Sign In 💕
@@ -73,9 +103,10 @@ unset($_SESSION['auth_error']);
                     New to Tretto? <a href="/Tretto.eg--System/MVC/View/GUI/register.php">Create an account</a>
                 </div>
             </div>
-
         </div>
     </div>
+
+    <?php include 'component/footer.php'; ?>
 </body>
 
 </html>
