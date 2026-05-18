@@ -37,7 +37,9 @@ class ExchangeController
                     'product_image' => $item['product_image'],
                     'price' => $item['price'],
                     'delivery_date' => $item['delivery_date'],
-                    'variant' => $item['category'] . ' — ' . mb_substr($item['description'], 0, 60),
+                    'variant' =>
+    $item['category'] . ' — ' .
+    mb_substr($item['product_description'] ?? '', 0, 60),
                 ];
             }
         }

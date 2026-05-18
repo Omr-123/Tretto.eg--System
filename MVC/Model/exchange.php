@@ -22,7 +22,7 @@ class ExchangeModel
                    status, shippingAddress, paymentMethod, deliveryDate
             FROM orders
             WHERE userID = $userID
-              AND status = 'Delivered'
+             AND LOWER(status) = 'delivered'
             ORDER BY deliveryDate DESC
         ");
 
@@ -33,30 +33,38 @@ class ExchangeModel
 
     // -------------------------------------------------------------------------
 
-    public function getOrderItems(int $orderID): array
-    {
-        $result = $this->db->query("
-            SELECT
-                oi.orderItem_ID,
-                oi.order_ID,
-                oi.product_ID   AS product_id,
-                oi.quantity,
-                oi.price,
-                p.name          AS product_name,
-                p.image         AS product_image,
-                p.category,
-                p.description,
-                o.deliveryDate  AS delivery_date
-            FROM orderitems oi
-            JOIN products p ON p.prod_ID = oi.product_ID
-            JOIN orders   o ON o.orderID = oi.order_ID
-            WHERE oi.order_ID = $orderID
-        ");
+   public function getOrderItems(int $orderID): array
+{
+    $result = $this->db->query("
+        SELECT
+            oi.orderItemID,
+            oi.orderID,
+            oi.PID AS product_id,
+            oi.quantity,
+            oi.price,
 
-        if (!$result)
-            return [];
-        return $result->fetch_all(MYSQLI_ASSOC);
+            p.name AS product_name,
+            p.image AS product_image,
+            p.category,
+            p.descriptions AS description,
+
+            o.deliveryDate AS delivery_date
+
+        FROM orderItems oi
+        JOIN product p
+            ON p.PID = oi.PID
+        JOIN orders o
+            ON o.orderID = oi.orderID
+
+        WHERE oi.orderID = $orderID
+    ");
+
+    if (!$result) {
+        return [];
     }
+
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
 
     // -------------------------------------------------------------------------
     // EXCHANGE REQUESTS
@@ -102,7 +110,7 @@ class ExchangeModel
         $result = $this->db->query("
             SELECT er.*, p.name AS old_product_name, o.orderID AS order_ref
             FROM exchange_requests er
-            JOIN products p ON p.prod_ID = er.old_product_id
+            JOIN product p ON p.PID = er.old_product_id
             JOIN orders   o ON o.orderID = er.order_id
             WHERE er.request_id = $id
             LIMIT 1
@@ -137,8 +145,15 @@ class ExchangeModel
     public function getAvailableProducts(): array
     {
         $result = $this->db->query("
-            SELECT prod_ID AS product_id, name, price, image, category
-            FROM products
+            SELECT
+    PID AS product_id,
+    name,
+    price,
+    image,
+    category
+FROM product
+ORDER BY name ASC
+            
             WHERE stock > 0
             ORDER BY name ASC
         ");

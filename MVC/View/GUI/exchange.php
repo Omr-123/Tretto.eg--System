@@ -12,6 +12,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ── Load page data (orders + products) ───────────────────────────────────────
 $pageData = $controller->loadPage();
 $orders   = $pageData['orders'];
+echo "<pre>";
+print_r($orders);
+echo "</pre>";
 $products = $pageData['products'];
 
 // ── Keep old POST values to re-fill form on error ─────────────────────────────

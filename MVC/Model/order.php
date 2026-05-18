@@ -46,10 +46,14 @@ class Order
     {
         $orderID = (int) $orderID;
 
-        $sql = "SELECT p.name AS product_name, oi.quantity, oi.price
-                FROM order_items oi
-                JOIN product p ON oi.PID = p.PID
-                WHERE oi.orderID = $orderID";
+        $sql = "SELECT p.name AS product_name, oi.quantity, oi.price,
+                   pi.images
+            FROM order_items oi
+            JOIN product p ON oi.PID = p.PID
+            LEFT JOIN product_variants pv ON pv.PID = p.PID
+            LEFT JOIN product_images pi ON pi.pvid = pv.pvid
+            WHERE oi.orderID = $orderID
+            GROUP BY oi.itemID";
 
         $result = $conn->query($sql);
         if (!$result)
