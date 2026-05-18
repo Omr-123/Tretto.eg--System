@@ -34,9 +34,9 @@ class AuthController
         $_SESSION['logged_in'] = true;
 
         if ($user->user_type === 'admin') {
-            header('Location: /Tretto.eg--System/MVC/View/GUI/admin-dashboard.php');
+            header('Location: /Tretto.eg--System/MVC/View/GUI/component/admin_dashboard.php');
         } else {
-            header('Location: /Tretto.eg--System/MVC/View/GUI/index.php');
+            header('Location: /Tretto.eg--System/MVC/View/GUI/component/index.php');
         }
         exit;
     }

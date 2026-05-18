@@ -23,11 +23,11 @@ if ($isLoggedIn) {
     <a class="logo" href="/Tretto.eg--System/MVC/View/GUI/index.php">Tretto<span>.</span>eg <span
             class="logo-heart">♥</span></a>
     <ul class="nav-links">
-        <li><a href="/Tretto.eg--System/MVC/View/GUI/index.php" id="nl-home">Home</a></li>
-        <li><a href="/Tretto.eg--System/MVC/View/GUI/products.php" id="nl-products">Products</a></li>
-        <li><a href="/Tretto.eg--System/MVC/View/GUI/trackorder.php" id="nl-track">Track Order</a></li>
-        <li><a href="/Tretto.eg--System/MVC/View/GUI/location.php" id="nl-location">Stores</a></li>
-        <li><a href="/Tretto.eg--System/MVC/View/GUI/support.php" id="nl-support">Support</a></li>
+        <li><a href="/../index.php" id="nl-home">Home</a></li>
+        <li><a href="/../products.php" id="nl-products">Products</a></li>
+        <li><a href="/../trackorder.php" id="nl-track">Track Order</a></li>
+        <li><a href="/../location.php" id="nl-location">Stores</a></li>
+        <li><a href="/../support.php" id="nl-support">Support</a></li>
     </ul>
     <div class="nav-acts">
         <form action="/Tretto.eg--System/MVC/View/GUI/products.php" method="GET" style="display:inline;">

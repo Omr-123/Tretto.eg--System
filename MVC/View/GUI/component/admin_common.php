@@ -2,14 +2,17 @@
 require_once __DIR__ . '/../../../config.php';
 ensure_session();
 
-if (!isset($_SESSION['role'], $_SESSION['admin_id']) || $_SESSION['role'] !== 'Admin') {
-    redirect_to('MVC/View/GUI/component/admin_login.php');
+if (
+    empty($_SESSION['logged_in']) ||
+    strtolower($_SESSION['user_type'] ?? '') !== 'admin'
+) {
+    redirect_to('MVC/View/GUI/login.php');
 }
 
 require_once __DIR__ . '/../../../Controller/AdminController.php';
 $controller = $controller ?? new AdminController();
 $APP_BASE = app_base_url();
-$adminName = $_SESSION['admin_name'] ?? 'Admin';
+$adminName = $_SESSION['name'] ?? 'Admin';
 
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 function admin_img_url(?string $image): string {
@@ -42,7 +45,13 @@ function admin_header(string $title = 'Admin', string $active = ''): void {
     <div class="nav-title">Products</div><a class="nav-item <?= $active==='products'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_dashboard.php#products')) ?>">👟 Products</a><a class="nav-item <?= $active==='add-product'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_dashboard.php#add-product')) ?>">➕ Add Product</a>
     <div class="nav-title">Orders</div><a class="nav-item <?= $active==='orders'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_dashboard.php#orders')) ?>">📦 Orders</a><a class="nav-item <?= $active==='refunds'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_dashboard.php#refunds')) ?>">🔄 Refunds</a><a class="nav-item <?= $active==='reports'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_dashboard.php#reports')) ?>">📊 Reports</a>
     <div class="nav-title">More</div><a class="nav-item <?= $active==='reviews'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_reviews.php')) ?>">⭐ Reviews</a><a class="nav-item <?= $active==='exchanges'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_exchanges.php')) ?>">🔁 Exchanges</a><a class="nav-item <?= $active==='locations'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_locations.php')) ?>">📍 Locations</a><a class="nav-item <?= $active==='support'?'active':'' ?>" href="<?= h(app_url('MVC/View/GUI/component/admin_support.php')) ?>">🎧 Support</a>
-    <div class="side-footer"><strong><?= h($adminName) ?></strong><div class="muted">Full Access</div><a href="<?= h(app_url('MVC/View/GUI/component/logout.php')) ?>" class="logout">🚪 Logout</a></div>
+    <div class="side-footer"><strong><?= h($adminName) ?></strong><div class="muted">Full Access</div>
+    <form method="POST" action="<?= h(app_url('MVC/Controller/AuthController.php')) ?>" style="margin-top:12px;">
+    <input type="hidden" name="action" value="logout">
+    <button type="submit" class="logout" style="border:none;cursor:pointer;">
+        🚪 Logout
+    </button>
+</form></div>
 </aside>
 <main class="main"><div class="topbar"><div class="title"><?= h($title) ?></div><div><?= h($adminName) ?></div></div><div class="content">
 <?php }

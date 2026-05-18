@@ -23,7 +23,11 @@ admin_header('Dashboard', 'dashboard');
     </div>
     <div class="card"><div class="card-head"><div class="card-title">Recent Orders</div><button class="btn btn-outline" onclick="goTo('orders')">View All</button></div>
     <table><thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody>
-    <?php foreach (array_slice($orders,0,5) as $o): $status=$o['status'] ?? 'Pending'; ?><tr><td>#<?= (int)($o['orderID'] ?? 0) ?></td><td><?= h($o['userName'] ?? 'N/A') ?></td><td><?= number_format((float)($o['totalAmount'] ?? 0),2) ?> EGP</td><td><span class="badge badge-<?= h(strtolower($status)) ?>"><?= h($status) ?></span></td><td><?= h($o['orderDate'] ?? '') ?></td></tr><?php endforeach; ?>
+    <?php foreach (array_slice($orders,0,5) as $o): $status=$o['status'] ?? 'Pending'; ?><tr><td>#<?= (int)($o['orderID'] ?? 0) ?></td><td><?= h($o['userName'] ?? 'N/A') ?></td>
+    <td><?= number_format((float)($o['totalAmount'] ?? 0),2) ?> EGP</td>
+    <td><span class="badge badge-<?= h(strtolower($status)) ?>"><?= h($status) ?></span></td>
+    <td><?= h($o['orderDate'] ?? '') ?></td></tr>
+    <?php endforeach; ?>
     <?php if (!$orders): ?><tr><td colspan="5" style="text-align:center;color:var(--muted)">No orders yet.</td></tr><?php endif; ?>
     </tbody></table></div>
 </section>
@@ -33,7 +37,9 @@ admin_header('Dashboard', 'dashboard');
     <table><thead><tr><th>Image</th><th>ID</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Details</th><th>Actions</th></tr></thead><tbody>
     <?php foreach ($products as $p): $stock=(int)($p['stock'] ?? 0); $pid=(int)($p['PID'] ?? 0); ?><tr>
         <td><img class="img-thumb" src="<?= h(admin_img_url($p['image'] ?? '')) ?>" alt="product"></td>
-        <td>#<?= $pid ?></td><td><strong><?= h($p['name'] ?? '') ?></strong><div class="muted"><?= h(strlen($p['descriptions'] ?? '') > 45 ? substr($p['descriptions'], 0, 45) . '...' : ($p['descriptions'] ?? '')) ?></div></td>
+        <td>#<?= $pid ?></td><td><strong><?= h($p['name'] ?? '') ?></strong>
+        <div class="muted"><?= h(strlen($p['descriptions'] ?? '') > 45 ? substr($p['descriptions'], 0, 45) . '...' : ($p['descriptions'] ?? '')) ?></div>
+    </td>
         <td><?= h($p['category'] ?? '') ?></td><td><?= number_format((float)($p['price'] ?? 0),2) ?> EGP</td>
         <td><span class="badge <?= $stock===0?'badge-out':($stock<10?'badge-low':'badge-active') ?>"><?= $stock ?> units</span></td>
         <td><?= product_details($p) ?></td>
@@ -83,9 +89,14 @@ admin_header('Dashboard', 'dashboard');
 <script>
 function goTo(sec){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));const el=document.getElementById('sec-'+sec);if(el)el.classList.add('active');}
 function openFromHash(){goTo((location.hash||'#dashboard').replace('#',''))}window.addEventListener('load',openFromHash);window.addEventListener('hashchange',openFromHash);
-function showMsg(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500)}function clearMsgs(){['form-error','form-ok'].forEach(id=>{const e=document.getElementById(id);e.textContent='';e.classList.remove('show')})}
-function showCategoryFields(){const c=document.getElementById('ap-cat').value;document.querySelectorAll('.type').forEach(x=>x.style.display='none');const el=document.getElementById('fields-'+c);if(el)el.style.display='block'}
-function submitAddProduct(){clearMsgs();const name=document.getElementById('ap-name').value.trim(),cat=document.getElementById('ap-cat').value,price=parseFloat(document.getElementById('ap-price').value),stock=document.getElementById('ap-stock').value;if(!name||!cat||!price||stock===''||parseInt(stock)<0){showMsg('form-error','Please fill in the required product information: name, category, price and stock.');return}fetch(APP_BASE+'/MVC/Controller/AdminController.php?action=addProduct',{method:'POST',body:new FormData(document.getElementById('addProductForm'))}).then(r=>r.json()).then(res=>{if(res.success){showMsg('form-ok',res.message||'Product added successfully.');toast('Product added.');setTimeout(()=>location.href=APP_BASE+'/MVC/View/GUI/component/admin_dashboard.php#products',700);setTimeout(()=>location.reload(),950)}else showMsg('form-error',res.message||'Failed to add product.')}).catch(()=>showMsg('form-error','Connection error. Please try again.'))}
+function showMsg(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500)}
+function clearMsgs(){['form-error','form-ok'].forEach(id=>{const e=document.getElementById(id);e.textContent='';e.classList.remove('show')})}
+function showCategoryFields(){const c=document.getElementById('ap-cat').value;document.querySelectorAll('.type').forEach(x=>x.style.display='none');
+    const el=document.getElementById('fields-'+c);if(el)el.style.display='block'}
+    
+function submitAddProduct(){clearMsgs();const name=document.getElementById('ap-name').value.trim(),cat=document.getElementById('ap-cat').value,price=parseFloat(document.getElementById('ap-price').value),stock=document.getElementById('ap-stock').value;
+    if(!name||!cat||!price||stock===''||parseInt(stock)<0){showMsg('form-error','Please fill in the required product information: name, category, price and stock.');
+        return}fetch(APP_BASE+'/MVC/Controller/AdminController.php?action=addProduct',{method:'POST',body:new FormData(document.getElementById('addProductForm'))}).then(r=>r.json()).then(res=>{if(res.success){showMsg('form-ok',res.message||'Product added successfully.');toast('Product added.');setTimeout(()=>location.href=APP_BASE+'/MVC/View/GUI/component/admin_dashboard.php#products',700);setTimeout(()=>location.reload(),950)}else showMsg('form-error',res.message||'Failed to add product.')}).catch(()=>showMsg('form-error','Connection error. Please try again.'))}
 function updateOrderStatus(id,status){post('modifyOrder',{orderID:id,status}).then(r=>toast(r.success?'Order updated':'Failed to update order'))}
 function deleteOrder(id){if(!confirm('Delete this order?'))return;post('deleteOrder',{orderID:id}).then(r=>{toast(r.success?'Order deleted':'Failed');if(r.success)setTimeout(()=>location.reload(),600)})}
 function applyRefund(id){post('applyRefund',{refundID:id}).then(r=>{toast(r.success?'Refund approved':'Failed');if(r.success)setTimeout(()=>location.reload(),600)})}

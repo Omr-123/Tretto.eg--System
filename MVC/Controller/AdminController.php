@@ -18,14 +18,14 @@ class AdminController
     public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            redirect_to('MVC/View/GUI/component/admin_login.php');
+            redirect_to('MVC/View/GUI/login.php');
         }
 
         $email = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
 
         if ($email === '' || $password === '') {
-            redirect_to('MVC/View/GUI/component/admin_login.php?error=1');
+            redirect_to('MVC/View/GUI/login.php?error=1');
         }
 
         if ($this->admin->login($email, $password)) {
@@ -35,7 +35,7 @@ class AdminController
             redirect_to('MVC/View/GUI/component/admin_dashboard.php');
         }
 
-        redirect_to('MVC/View/GUI/component/admin_login.php?error=1');
+        redirect_to('MVC/View/GUI/login.php?error=1');
     }
 
     private function requirePost(): void

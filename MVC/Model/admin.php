@@ -12,7 +12,7 @@ class Admin
 
     public function __construct()
     {
-        $db = new Database();
+        $db = new Databases();
         $this->conn = $db->getConnection();
         $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
