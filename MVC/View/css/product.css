@@ -367,7 +367,7 @@
     color: var(--mid);
     font-size: 12px;
     font-weight: 500;
-    cursor: none;
+
     font-family: 'DM Sans', sans-serif;
     transition: all .18s;
     border-radius: 20px
@@ -387,7 +387,6 @@
     color: var(--mid);
     font-size: 12px;
     font-weight: 500;
-    cursor: none;
     font-family: 'DM Sans', sans-serif;
     outline: none;
     margin-left: auto;
@@ -650,7 +649,6 @@
             font-weight: 700;
             letter-spacing: .1em;
             text-transform: uppercase;
-            cursor: none;
             font-family: 'DM Sans', sans-serif;
             transition: all .22s;
             border-radius: 24px;
@@ -671,7 +669,6 @@
             font-weight: 700;
             letter-spacing: .07em;
             text-transform: uppercase;
-            cursor: none;
             font-family: 'DM Sans', sans-serif;
             transition: all .2s;
             border-radius: 24px
@@ -688,7 +685,6 @@
             font-weight: 700;
             letter-spacing: .06em;
             color: var(--muted);
-            cursor: none;
             transition: color .2s;
             display: flex;
             align-items: center;

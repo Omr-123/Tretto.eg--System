@@ -36,7 +36,6 @@
 .pd-thumb {
     width: 72px;
     height: 88px;
-    #cursor: none;
     opacity: .5;
     transition: opacity .2s;
     border: 2px solid transparent;
@@ -143,7 +142,6 @@
     background: var(--white);
     font-size: 13px;
     font-weight: 500;
-    #cursor: none;
     transition: all .18s;
     display: flex;
     align-items: center;
@@ -162,7 +160,6 @@
 .size-btn.unavail {
     opacity: .3;
     text-decoration: line-through;
-    cursor: not-allowed
 }
 
 .color-grid {
@@ -175,7 +172,6 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    #cursor: none;
     border: 2px solid transparent;
     transition: border-color .18s;
     box-shadow: 0 2px 6px rgba(0, 0, 0, .12)
@@ -208,7 +204,6 @@
     border: 1.5px solid var(--border);
     background: var(--white);
     font-size: 20px;
-    #cursor: none;
     transition: all .2s;
     border-radius: 50%
 }

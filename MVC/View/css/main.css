@@ -36,7 +36,6 @@
             background: var(--blush);
             color: var(--dark);
             overflow-x: hidden;
-            /* cursor: none; */
             min-height: 100vh
         }
 
@@ -128,7 +127,6 @@
             font-weight: 700;
             letter-spacing: .1em;
             text-transform: uppercase;
-            cursor: none;
             font-family: 'DM Sans', sans-serif;
             transition: all .22s;
             border-radius: 24px;
@@ -149,7 +147,6 @@
             font-weight: 700;
             letter-spacing: .07em;
             text-transform: uppercase;
-            cursor: none;
             font-family: 'DM Sans', sans-serif;
             transition: all .2s;
             border-radius: 24px
@@ -166,7 +163,6 @@
             font-weight: 700;
             letter-spacing: .06em;
             color: var(--muted);
-            cursor: none;
             transition: color .2s;
             display: flex;
             align-items: center;

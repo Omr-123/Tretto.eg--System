@@ -63,29 +63,16 @@ private $conn;
         header("Location:cart.php");
         }
 
-        public function addToFav($prod_id,$user_id,$pvid){
-        $query = "SELECT favID FROM favorite WHERE ID = :user_id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':user_id', $user_id);
-        $stmt->execute();
-         $cartID = $stmt->fetch()['favID'];
-
-        if (!$cartID) {
-            $query = "INSERT INTO favorite (ID) VALUES (:user_id)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':user_id', $user_id);
-            $stmt->execute();
-            $cartID = $this->conn->lastInsertId();
-        }
-        $query = "INSERT INTO favorite_items (favID, PID, pvid) VALUES (:favID, :PID, :pvid)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':favID', $cartID);
-        $stmt->bindParam(':PID', $prod_id);
-        $stmt->bindParam(':pvid', $pvid);
-        $stmt->execute();
-        header("Location:favorite.php");
-        
-        }
+       public function addToFav($prod_id, $user_id, $pvid){
+    $query = "INSERT INTO favorites (userID, PID, addedDate) 
+              VALUES (:user_id, :prodID, :time)";
+    $stmt = $this->conn->prepare($query);
+    $time = time(); // or date("Y-m-d H:i:s") if column is DATETIME
+    $stmt->bindParam(':user_id', $user_id);
+    $stmt->bindParam(':prodID', $prod_id);
+    $stmt->bindParam(':time', $time);
+    $stmt->execute();
+}
         public function getFilter($sortOrder){
         $products = $this->getAllProducts();
         // 2. Check if a sort was requested

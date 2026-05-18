@@ -10,18 +10,12 @@ class UserController
         $db = new Database();
         $this->conn = $db->getConnection();
     }
-
-    // Favorites count
-    public function Fav_Num($ID)
-    {
-        $query = "SELECT COUNT(favoriteID) as total FROM favorites WHERE userID = :id";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $ID);
-        $stmt->execute();
-
-        $result = $stmt->fetch();
-
-        return $result['total'] ?? 0;
+    public function Fav_Num($ID){
+    $query="SELECT COUNT(*) as total FROM favorites WHERE userID=:id";
+    $stmt=$this->conn->prepare($query);
+    $stmt->bindParam(':id',$ID);
+    $stmt->execute();
+    return $stmt->fetchColumn();
     }
 
     // Cart total quantity

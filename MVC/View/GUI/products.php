@@ -2,6 +2,9 @@
 session_start();
 require_once __DIR__ . '/../../Controller/products_controller.php';
 require_once __DIR__ . '/../../Model/product.php';
+require_once __DIR__ . '/../../Model/bag.php';
+require_once __DIR__ . '/../../Model/slipper.php';
+require_once __DIR__ . '/../../Model/clogs.php';
 require_once __DIR__ . '/../../Model/ProductFactory.php';
 require_once __DIR__ . '/../../Model/cart.php';
 require_once __DIR__ . '/../../Model/Collection.php';

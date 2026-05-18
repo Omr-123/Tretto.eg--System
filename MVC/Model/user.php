@@ -30,31 +30,31 @@ class UserModel
     {
         $email = $this->conn->real_escape_string($email);
         $result = $this->conn->query(
-            "SELECT *
-             FROM person
+            "SELECT userID, name, email, phone, password, role,
+                    address, city, country, registrationDate
+             FROM users
              WHERE email = '$email'
              LIMIT 1"
         );
-        
+
         if (!$result || $result->num_rows === 0)
             return false;
+
         $row = $result->fetch_assoc();
+
         $user = new User();
-        $user->userID = (int) $row['ID'];
+        $user->userID = (int) $row['userID'];
         $user->name = $row['name'];
         $user->email = $row['email'];
+        $user->phone = $row['phone'];
         $user->password = $row['password'];
-        
-        $result = $this->conn->query(
-            "SELECT *
-             FROM users
-             WHERE ID = '$user->userID'
-             LIMIT 1"
-        );
-        
-        $row = $result->fetch_assoc();
-        $user->phone = $row['phoneNumber'];
-        $user->address = $row['shippingaddress'];
+        $user->user_type = $row['role'];
+        $user->address = $row['address'];
+        $user->city = $row['city'];
+        $user->country = $row['country'];
+        $user->registrationDate = $row['registrationDate'];
+        $user->created_at = $row['registrationDate'];
+    
         return $user;
     }
 
