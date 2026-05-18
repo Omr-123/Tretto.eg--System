@@ -6,6 +6,9 @@ require_once __DIR__ . '/../../Controller/favorites_Controller.php';
 
 $userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
 $favorites = getFavoritesForView($userID);
+$fav=getFav($userID);
+$ct=-1;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,18 +53,18 @@ $favorites = getFavoritesForView($userID);
 
             <?php else: ?>
                 <div class="prod-grid" id="fav-grid">
-                    <?php foreach ($favorites as $item): ?>
+                    <?php foreach ($favorites as $item): $ct=$ct+1;?>
                         <div class="prod-card">
-                            <?php if (!empty($item['image'])): ?>
-                                <img src="../images/<?= $item['image'] ?>" alt="<?= $item['name'] ?>" class="prod-img">
+                            <?php if (!empty($item->variants[0]->img_url[0])): ?>
+                                <img src="<?= $item->variants[0]->img_url[0]; ?>" alt="<?= $item->name; ?>" class="prod-img">
                             <?php else: ?>
                                 <div class="prod-img prod-img-placeholder">No Image</div>
                             <?php endif; ?>
 
-                            <div class="prod-title"><?= $item['name'] ?></div>
-                            <div class="prod-price"><?= $item['price'] ?> EGP</div>
+                            <div class="prod-title"><?= $item->name; ?></div>
+                            <div class="prod-price"><?= $item->price; ?> EGP</div>
 
-                            <a href="../../Controller/favorites_Controller.php?action=remove&id=<?= $item['favoriteID'] ?>&User=<?= $_SESSION['userID']?>"
+                            <a href="../../Controller/favorites_Controller.php?action=remove&id=<?= $fav[$ct]['favoriteID']; ?>&User=<?= $_SESSION['userID']?>"
                                 class="btn-secondary">Remove</a>
                         </div>
                     <?php endforeach; ?>

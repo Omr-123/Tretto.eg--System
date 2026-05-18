@@ -28,8 +28,8 @@ class product_variants {
         $this->getImages(); // Fetch images when the variant is created
     }
     public function getImages(){
-        $stmt = $this->conn->prepare("SELECT * FROM product_images WHERE pvid = :pvid");
-        $stmt->bindParam(':pvid', $this->pvid);
+        $stmt = $this->conn->prepare("SELECT * FROM product_images WHERE PID= :id");
+        $stmt->bindParam(':id', $this->pid);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         foreach($result as $row) {

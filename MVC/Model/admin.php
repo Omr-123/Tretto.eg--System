@@ -127,8 +127,8 @@ class Admin
 
             $image = trim($data['image'] ?? '');
             if ($image !== '') {
-                $stmt = $this->conn->prepare('INSERT INTO product_images (pvid, images) VALUES (?, ?)');
-                $stmt->execute([$pvid, $image]);
+                $stmt = $this->conn->prepare('INSERT INTO product_images (PID, images) VALUES (?, ?)');
+                $stmt->execute([$pid, $image]);
             }
 
             // Optional subtype tables. If columns differ, ignore instead of breaking product creation.
@@ -238,7 +238,7 @@ class Admin
                     MAX(s.materialsoftness) AS materialsoftness
              FROM product p
              LEFT JOIN product_variants pv ON pv.PID = p.PID
-             LEFT JOIN product_images pi ON pi.pvid = pv.pvid
+             LEFT JOIN product_images pi ON pi.PID = p.PID
              LEFT JOIN Bag b ON b.PID = p.PID
              LEFT JOIN Clogs c ON c.PID = p.PID
              LEFT JOIN Slipper s ON s.PID = p.PID
@@ -266,18 +266,18 @@ class Admin
 
     public function getProductVariants(int $PID): array
     {
-        return $this->fetchAll('SELECT * FROM product_variants WHERE PID = ? ORDER BY pvid DESC', [$PID]);
+        return $this->fetchAll('SELECT * FROM product_variants WHERE PID = ?', [$PID]);
     }
 
-    public function getVariantImages(int $pvid): array
+    public function getVariantImages(int $PID): array
     {
-        return $this->fetchAll('SELECT * FROM product_images WHERE pvid = ?', [$pvid]);
+        return $this->fetchAll('SELECT * FROM product_images WHERE PID = ?', [$PID]);
     }
 
     public function getProductImages(int $PID): array
     {
         return $this->fetchAll(
-            'SELECT pi.* FROM product_images pi JOIN product_variants pv ON pv.pvid = pi.pvid WHERE pv.PID = ?',
+            'SELECT pi.* FROM product_images pi WHERE PID=?',
             [$PID]
         );
     }
@@ -308,8 +308,7 @@ class Admin
         if ($pvid <= 0) return false;
         try {
             $this->conn->beginTransaction();
-            $this->execute('DELETE FROM product_images WHERE pvid = ?', [$pvid]);
-            $ok = $this->execute('DELETE FROM product_variants WHERE pvid = ?', [$pvid]);
+            $this->execute('DELETE FROM product_variants WHERE pvid = ?', [$pvid]);
             $this->conn->commit();
             return $ok;
         } catch (Throwable $e) {
@@ -318,10 +317,10 @@ class Admin
         }
     }
 
-    public function addVariantImage(int $pvid, string $image): bool
+    public function addVariantImage(int $PID, string $image): bool
     {
-        if ($pvid <= 0 || trim($image) === '') return false;
-        return $this->execute('INSERT INTO product_images (pvid, images) VALUES (?, ?)', [$pvid, $image]);
+        if ($PID <= 0 || trim($image) === '') return false;
+        return $this->execute('INSERT INTO product_images (PID, images) VALUES (?, ?)', [$PID, $image]);
     }
 
     public function deleteProductImage(int $piid): bool

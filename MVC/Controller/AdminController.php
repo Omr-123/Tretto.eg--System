@@ -45,74 +45,74 @@ class AdminController
         }
     }
 
-   private function handleUpload(string $field = 'image_file'): string
-{
-    if (empty($_FILES[$field]) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-        return trim($_POST['image'] ?? '');
-    }
+    private function handleUpload(string $field = 'image_file'): string
+    {
+        if (empty($_FILES[$field]) || ($_FILES[$field]['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return trim($_POST['image'] ?? '');
+        }
 
-    if ($_FILES[$field]['error'] !== UPLOAD_ERR_OK) {
-        throw new RuntimeException('Image upload failed.');
-    }
+        if ($_FILES[$field]['error'] !== UPLOAD_ERR_OK) {
+            throw new RuntimeException('Image upload failed.');
+        }
 
-    $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-    $original = $_FILES[$field]['name'] ?? 'image';
+        $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        $original = $_FILES[$field]['name'] ?? 'image';
 
-    // ✅ Extract extension
-    $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
+        // ✅ Extract extension
+        $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
 
-    if (!in_array($ext, $allowed, true)) {
-        throw new RuntimeException('Invalid image type.');
-    }
+        if (!in_array($ext, $allowed, true)) {
+            throw new RuntimeException('Invalid image type.');
+        }
 
-    // ✅ Clean filename (VERY IMPORTANT)
-    $baseName = pathinfo($original, PATHINFO_FILENAME);
-    $baseName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $baseName);
+        // ✅ Clean filename (VERY IMPORTANT)
+        $baseName = pathinfo($original, PATHINFO_FILENAME);
+        $baseName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $baseName);
 
-    $safeName = $baseName . '.' . $ext;
+        $safeName = $baseName . '.' . $ext;
 
-    // ✅ Correct path
-    $dir = __DIR__ . '/../assets/images/';
-    if (!is_dir($dir)) {
-        mkdir($dir, 0775, true);
-    }
+        // ✅ Correct path
+        $dir = __DIR__ . '/../assets/images/';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
 
-    $target = $dir . $safeName;
-
-    // ⚠️ Prevent overwrite (important)
-    $counter = 1;
-    while (file_exists($target)) {
-        $safeName = $baseName . '_' . $counter . '.' . $ext;
         $target = $dir . $safeName;
-        $counter++;
-    }
 
-    if (!move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
-        throw new RuntimeException('Could not save uploaded image.');
-    }
+        // ⚠️ Prevent overwrite (important)
+        $counter = 1;
+        while (file_exists($target)) {
+            $safeName = $baseName . '_' . $counter . '.' . $ext;
+            $target = $dir . $safeName;
+            $counter++;
+        }
 
-    return '../assets/images/' . $safeName;
-}
+        if (!move_uploaded_file($_FILES[$field]['tmp_name'], $target)) {
+            throw new RuntimeException('Could not save uploaded image.');
+        }
+
+        return '../assets/images/' . $safeName;
+    }
 
     private function productDataFromPost(): array
     {
         return [
-            'PID' => (int)($_POST['PID'] ?? $_POST['prod_ID'] ?? 0),
+            'PID' => (int) ($_POST['PID'] ?? $_POST['prod_ID'] ?? 0),
             'name' => trim($_POST['name'] ?? ''),
             'description' => trim($_POST['description'] ?? ''),
-            'price' => (float)($_POST['price'] ?? 0),
-            'stock' => (int)($_POST['stock'] ?? 0),
+            'price' => (float) ($_POST['price'] ?? 0),
+            'stock' => (int) ($_POST['stock'] ?? 0),
             'category' => trim($_POST['category'] ?? ''),
             'image' => $this->handleUpload(),
             'color' => trim($_POST['color'] ?? 'Default'),
-            'size' => (int)($_POST['size'] ?? $_POST['sizes'] ?? 0),
-            'add_price' => (float)($_POST['add_price'] ?? 0),
-            'capacityLiters' => (int)($_POST['capacityLiters'] ?? $_POST['capacity'] ?? 0),
-            'numpackets' => (int)($_POST['numpackets'] ?? 0),
-            'heelHeight' => (float)($_POST['heelHeight'] ?? 0),
+            'size' => (int) ($_POST['size'] ?? $_POST['sizes'] ?? 0),
+            'add_price' => (float) ($_POST['add_price'] ?? 0),
+            'capacityLiters' => (int) ($_POST['capacityLiters'] ?? $_POST['capacity'] ?? 0),
+            'numpackets' => (int) ($_POST['numpackets'] ?? 0),
+            'heelHeight' => (float) ($_POST['heelHeight'] ?? 0),
             'strapType' => trim($_POST['strapType'] ?? $_POST['clog_string'] ?? ''),
             'materialsoftness' => trim($_POST['materialsoftness'] ?? $_POST['slipper_string'] ?? $_POST['sole_type'] ?? ''),
-            'BranchID' => (int)($_POST['BranchID'] ?? 0),
+            'BranchID' => (int) ($_POST['BranchID'] ?? 0),
         ];
     }
 
@@ -148,7 +148,7 @@ class AdminController
     public function deleteProduct(): void
     {
         $this->requirePost();
-        $pid = (int)($_POST['PID'] ?? $_POST['prod_ID'] ?? 0);
+        $pid = (int) ($_POST['PID'] ?? $_POST['prod_ID'] ?? 0);
         $success = $pid > 0 && $this->admin->deleteProduct($pid);
         json_response(['success' => $success, 'message' => $success ? 'Product deleted.' : 'Invalid product ID.'], $success ? 200 : 422);
     }
@@ -156,17 +156,32 @@ class AdminController
     public function updateStock(): void
     {
         $this->requirePost();
-        $pid = (int)($_POST['PID'] ?? $_POST['prod_ID'] ?? 0);
-        $quantity = (int)($_POST['quantity'] ?? 0);
+        $pid = (int) ($_POST['PID'] ?? $_POST['prod_ID'] ?? 0);
+        $quantity = (int) ($_POST['quantity'] ?? 0);
         $success = $pid > 0 && $quantity >= 0 && $this->admin->updateStock($pid, $quantity);
         json_response(['success' => $success, 'message' => $success ? 'Stock updated.' : 'Invalid stock data.'], $success ? 200 : 422);
     }
 
-    public function viewProducts(): array { return $this->admin->viewProducts(); }
-    public function getProductByID(int $PID): ?array { return $this->admin->getProductByID($PID); }
-    public function getProductVariants(int $PID): array { return $this->admin->getProductVariants($PID); }
-    public function getVariantImages(int $pvid): array { return $this->admin->getVariantImages($pvid); }
-    public function getProductImages(int $PID): array { return $this->admin->getProductImages($PID); }
+    public function viewProducts(): array
+    {
+        return $this->admin->viewProducts();
+    }
+    public function getProductByID(int $PID): ?array
+    {
+        return $this->admin->getProductByID($PID);
+    }
+    public function getProductVariants(int $PID): array
+    {
+        return $this->admin->getProductVariants($PID);
+    }
+    public function getVariantImages(int $PID): array
+    {
+        return $this->admin->getVariantImages($PID);
+    }
+    public function getProductImages(int $PID): array
+    {
+        return $this->admin->getProductImages($PID);
+    }
 
     public function addProductVariant(): void
     {
@@ -174,11 +189,11 @@ class AdminController
         $success = $this->admin->addProductVariant($_POST);
         $pvid = 0;
         if ($success) {
-            $variants = $this->admin->getProductVariants((int)($_POST['PID'] ?? 0));
-            $pvid = (int)($variants[0]['pvid'] ?? 0);
+            $variants = $this->admin->getProductVariants((int) ($_POST['PID'] ?? 0));
+            $PID = (int) ($variants[0]['PID'] ?? 0);
             $img = $this->handleUpload();
-            if ($img !== '' && $pvid > 0) {
-                $this->admin->addVariantImage($pvid, $img);
+            if ($img !== '' && $PID > 0) {
+                $this->admin->addVariantImage($PID, $img);
             }
         }
         json_response(['success' => $success, 'message' => $success ? 'Variant added successfully.' : 'Failed to add variant.'], $success ? 200 : 422);
@@ -190,9 +205,9 @@ class AdminController
         $success = $this->admin->updateProductVariant($_POST);
         if ($success) {
             $img = $this->handleUpload();
-            $pvid = (int)($_POST['pvid'] ?? 0);
-            if ($img !== '' && $pvid > 0) {
-                $this->admin->addVariantImage($pvid, $img);
+            $PID= (int) ($_POST['PID'] ?? 0);
+            if ($img !== '' && $PID > 0) {
+                $this->admin->addVariantImage($PID, $img);
             }
         }
         json_response(['success' => $success, 'message' => $success ? 'Variant updated successfully.' : 'Failed to update variant.'], $success ? 200 : 422);
@@ -201,7 +216,7 @@ class AdminController
     public function deleteProductVariant(): void
     {
         $this->requirePost();
-        $pvid = (int)($_POST['pvid'] ?? 0);
+        $pvid = (int) ($_POST['pvid'] ?? 0);
         $success = $this->admin->deleteProductVariant($pvid);
         json_response(['success' => $success, 'message' => $success ? 'Variant deleted successfully.' : 'Failed to delete variant.'], $success ? 200 : 422);
     }
@@ -209,25 +224,52 @@ class AdminController
     public function deleteProductImage(): void
     {
         $this->requirePost();
-        $piid = (int)($_POST['piid'] ?? $_POST['id'] ?? 0);
+        $piid = (int) ($_POST['piid'] ?? $_POST['id'] ?? 0);
         $success = $this->admin->deleteProductImage($piid);
         json_response(['success' => $success, 'message' => $success ? 'Image deleted successfully.' : 'Failed to delete image.'], $success ? 200 : 422);
     }
 
-    public function viewOrders(): array { return $this->admin->viewOrders(); }
-    public function viewRefunds(): array { return $this->admin->viewRefunds(); }
-    public function viewReviews(): array { return $this->admin->viewReviews(); }
-    public function viewExchanges(): array { return $this->admin->viewExchanges(); }
-    public function viewStoreLocations(): array { return $this->admin->viewStoreLocations(); }
-    public function viewSupport(): array { return $this->admin->viewSupport(); }
-    public function getTopSelling(): array { return $this->admin->getTopSellingProducts(); }
-    public function getMonthlyRevenue(): float { return $this->admin->calculateMonthlyRevenue(); }
-    public function getLowStock(): array { return $this->admin->getLowStockAlerts(); }
+    public function viewOrders(): array
+    {
+        return $this->admin->viewOrders();
+    }
+    public function viewRefunds(): array
+    {
+        return $this->admin->viewRefunds();
+    }
+    public function viewReviews(): array
+    {
+        return $this->admin->viewReviews();
+    }
+    public function viewExchanges(): array
+    {
+        return $this->admin->viewExchanges();
+    }
+    public function viewStoreLocations(): array
+    {
+        return $this->admin->viewStoreLocations();
+    }
+    public function viewSupport(): array
+    {
+        return $this->admin->viewSupport();
+    }
+    public function getTopSelling(): array
+    {
+        return $this->admin->getTopSellingProducts();
+    }
+    public function getMonthlyRevenue(): float
+    {
+        return $this->admin->calculateMonthlyRevenue();
+    }
+    public function getLowStock(): array
+    {
+        return $this->admin->getLowStockAlerts();
+    }
 
     public function modifyOrder(): void
     {
         $this->requirePost();
-        $orderID = (int)($_POST['orderID'] ?? $_POST['order_ID'] ?? 0);
+        $orderID = (int) ($_POST['orderID'] ?? $_POST['order_ID'] ?? 0);
         $status = $_POST['status'] ?? '';
         $success = $orderID > 0 && $this->admin->modifyOrder($orderID, $status);
         json_response(['success' => $success], $success ? 200 : 422);
@@ -236,98 +278,122 @@ class AdminController
     public function deleteOrder(): void
     {
         $this->requirePost();
-        $orderID = (int)($_POST['orderID'] ?? $_POST['order_ID'] ?? 0);
+        $orderID = (int) ($_POST['orderID'] ?? $_POST['order_ID'] ?? 0);
         $success = $orderID > 0 && $this->admin->deleteOrder($orderID);
         json_response(['success' => $success], $success ? 200 : 422);
     }
 
-    public function applyRefund(): void { $this->requirePost(); $id = (int)($_POST['refundID'] ?? $_POST['refund_ID'] ?? 0); $success = $id > 0 && $this->admin->applyRefund($id); json_response(['success' => $success], $success ? 200 : 422); }
-    public function denyRefund(): void { $this->requirePost(); $id = (int)($_POST['refundID'] ?? $_POST['refund_ID'] ?? 0); $success = $id > 0 && $this->admin->denyRefund($id); json_response(['success' => $success], $success ? 200 : 422); }
-    public function applyExchange(): void { $this->requirePost(); $id = (int)($_POST['exchangeID'] ?? $_POST['exchange_ID'] ?? 0); $success = $id > 0 && $this->admin->applyExchange($id); json_response(['success' => $success], $success ? 200 : 422); }
-    public function denyExchange(): void { $this->requirePost(); $id = (int)($_POST['exchangeID'] ?? $_POST['exchange_ID'] ?? 0); $success = $id > 0 && $this->admin->denyExchange($id); json_response(['success' => $success], $success ? 200 : 422); }
+    public function applyRefund(): void
+    {
+        $this->requirePost();
+        $id = (int) ($_POST['refundID'] ?? $_POST['refund_ID'] ?? 0);
+        $success = $id > 0 && $this->admin->applyRefund($id);
+        json_response(['success' => $success], $success ? 200 : 422);
+    }
+    public function denyRefund(): void
+    {
+        $this->requirePost();
+        $id = (int) ($_POST['refundID'] ?? $_POST['refund_ID'] ?? 0);
+        $success = $id > 0 && $this->admin->denyRefund($id);
+        json_response(['success' => $success], $success ? 200 : 422);
+    }
+    public function applyExchange(): void
+    {
+        $this->requirePost();
+        $id = (int) ($_POST['exchangeID'] ?? $_POST['exchange_ID'] ?? 0);
+        $success = $id > 0 && $this->admin->applyExchange($id);
+        json_response(['success' => $success], $success ? 200 : 422);
+    }
+    public function denyExchange(): void
+    {
+        $this->requirePost();
+        $id = (int) ($_POST['exchangeID'] ?? $_POST['exchange_ID'] ?? 0);
+        $success = $id > 0 && $this->admin->denyExchange($id);
+        json_response(['success' => $success], $success ? 200 : 422);
+    }
     public function deleteReview(): void
     {
         $this->requirePost();
-    
-        $id = (int)($_POST['reviewID'] ?? $_POST['review_ID'] ?? 0);
+
+        $id = (int) ($_POST['reviewID'] ?? $_POST['review_ID'] ?? 0);
         $success = $id > 0 && $this->admin->deleteReview($id);
-    
+
         json_response([
             'success' => $success,
             'message' => $success ? 'Review deleted.' : 'Failed to delete review.'
         ], $success ? 200 : 422);
     }
-    
+
     public function addStoreLocation(): void
     {
         $this->requirePost();
-    
+
         $success = $this->admin->addStoreLocation($_POST);
-    
+
         json_response([
             'success' => $success,
             'message' => $success ? 'Location added.' : 'Failed to add location. Please fill city and address.'
         ], $success ? 200 : 422);
     }
-    
+
     public function editStoreLocation(): void
     {
         $this->requirePost();
-    
-        $id = (int)($_POST['storeID'] ?? $_POST['BranchID'] ?? 0);
+
+        $id = (int) ($_POST['storeID'] ?? $_POST['BranchID'] ?? 0);
         $success = $id > 0 && $this->admin->editStoreLocation($id, $_POST);
-    
+
         json_response([
             'success' => $success,
             'message' => $success ? 'Location updated.' : 'Failed to update location.'
         ], $success ? 200 : 422);
     }
-    
+
     public function deleteStoreLocation(): void
     {
         $this->requirePost();
-    
-        $id = (int)($_POST['storeID'] ?? $_POST['BranchID'] ?? 0);
+
+        $id = (int) ($_POST['storeID'] ?? $_POST['BranchID'] ?? 0);
         $success = $id > 0 && $this->admin->deleteStoreLocation($id);
-    
+
         json_response([
             'success' => $success,
             'message' => $success ? 'Location deleted.' : 'Failed to delete location.'
         ], $success ? 200 : 422);
     }
-    
+
     public function addSupport(): void
     {
         $this->requirePost();
-    
+
         $success = $this->admin->addSupport($_POST);
-    
+
         json_response([
             'success' => $success,
             'message' => $success ? 'Support ticket added.' : 'Failed to add support ticket. Check user ID and issue.'
         ], $success ? 200 : 422);
     }
-    
+
     public function modifySupport(): void
     {
         $this->requirePost();
-    
-        $id = (int)($_POST['supportID'] ?? $_POST['support_ID'] ?? 0);
+
+        $id = (int) ($_POST['supportID'] ?? $_POST['support_ID'] ?? 0);
         $success = $id > 0 && $this->admin->modifySupport($id, $_POST);
-    
+
         json_response([
             'success' => $success,
             'message' => $success ? 'Support ticket updated.' : 'Failed to update support ticket.'
         ], $success ? 200 : 422);
     }
-    
+
     public function deleteSupport(): void
     {
         $this->requirePost();
-    
-        $id = (int)($_POST['supportID'] ?? $_POST['support_ID'] ?? 0);
+
+        $id = (int) ($_POST['supportID'] ?? $_POST['support_ID'] ?? 0);
         $success = $id > 0 && $this->admin->deleteSupport($id);
-    
+
         json_response([
             'success' => $success,
             'message' => $success ? 'Support ticket deleted.' : 'Failed to delete support ticket.'

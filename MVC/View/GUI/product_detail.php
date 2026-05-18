@@ -49,7 +49,7 @@ if (isset($_GET['add_to_fav'])) {
                 <div class="pd-images">
                     <div class="pd-main-img"><img class="pd-main-photo" id="pd-main-photo" src="<?= $product->variants[$i]->img_url[$Img_Active] ?>"alt="Product"></div>
                     <div class="pd-thumbs">
-                            <?php foreach($product->variants[$i]->img_url as $variant): $ct=$ct+1;?>
+                            <?php foreach($product->variants[0]->img_url as $variant): $ct=$ct+1;?>
                                 <a href="product_detail.php?id=<?= $product->pid ?>&Img_Active=<?= $ct ?>$id=<?= $id ?>">
                                     <div class="pd-thumb <?= $ct==$Img_Active ? 'active' : '' ?>"><img id="pd-thumb-0" src="<?= $variant?>"alt="thumb"></div>
                                 </a>
@@ -59,7 +59,7 @@ if (isset($_GET['add_to_fav'])) {
                 </div>
                 <div class="pd-info">
                     <div class="pd-breadcrumb"><a onclick="goTo('products')"
-                            style="cursor:none;color:var(--muted);text-decoration:none">Products</a> › <span
+                            style="cursor:none;color:var(--muted);text-decoration:none">Products</a> <span
                             id="pd-cat-crumb">Slippers</span></div>
                     <h1 class="pd-title" id="pd-title"><?= $product->name ?></h1>
                     <div class="pd-stars" id="pd-stars">★★★★★ <span style="color:var(--muted);font-size:11px">(248
@@ -72,12 +72,11 @@ if (isset($_GET['add_to_fav'])) {
                     <p class="pd-desc" id="pd-desc" style="margin-top:16px"><?= $product->descriptions?></p>
                     <div class="pd-attr-title">Select Size</div>
                     <div class="size-grid" id="size-grid">
-                        <?php foreach($product->variants as $variant): $ct1=$ct1+1;
-                            if($variant->color== $product->variants[$Color_Active]->color): ?>
+                        <?php foreach($product->variants as $variant): $ct1=$ct1+1;?>
                             <a href="product_detail.php?id=<?= $product->pid ?>&Img_Active=<?= $Img_Active ?>&Size_Active=<?= $ct1 ?> &Color_Active=<?= $Color_Active ?>">
                                 <button class="size-btn     <?= $ct1==$Size_Active ? 'sel' : '' ?>" onclick="selSize(this)"><?= $variant->size ?></button>
                             </a>
-                        <?php endif; endforeach; ?>
+                        <?php endforeach; ?>
                         
                         
                     </div>

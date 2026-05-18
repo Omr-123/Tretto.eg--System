@@ -54,7 +54,7 @@ admin_header('View Product #' . $PID, 'products');
     <?php if ($variants):
         foreach ($variants as $v):
             $pvid = (int) ($v['pvid'] ?? 0);
-            $imgs = $controller->getVariantImages($pvid); ?>
+            $imgs = $controller->getVariantImages($v['PID']); ?>
             <div style="padding:18px;border-bottom:1px solid var(--border)"><strong>Variant ID:</strong> #<?= $pvid ?> &nbsp;
                 <strong>Color:</strong> <?= h($v['color'] ?? '') ?> &nbsp; <strong>Size:</strong> <?= (int) ($v['sizes'] ?? 0) ?>
                 &nbsp; <strong>Stock:</strong> <?= (int) ($v['stock'] ?? 0) ?> &nbsp; <strong>Extra Price:</strong>
