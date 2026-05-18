@@ -3,13 +3,15 @@ if (session_status() === PHP_SESSION_NONE)
     session_start();
 require_once __DIR__ . '/../../../db.php';
 require_once __DIR__ . '/../../Model/Checkout.php';
-
+require_once __DIR__ . '/../../Controller/cart_Controller.php';
+$ct=-1;
 if (!isset($cartItems) || !isset($total)) {
     $userID = $_SESSION['userID'] ?? null;
     if ($userID) {
-        $cartData = Checkout::getCartItems($userID);
-        $cartItems = $cartData['items'];
-        $total = $cartData['total'];
+        $cart=new Cart_Controller();
+        $cartItems = $cart->get_cart_items($userID);
+        $cart_info=$cart->get_cart_info($userID);
+        $total = $cart->Subtotal($userID)*1.4;
     } else {
         $cartItems = [];
         $total = 0;
@@ -108,17 +110,17 @@ if (!isset($cartItems) || !isset($total)) {
                 <div class="order-mini">
                     <div class="order-mini-title">Your Order 🛍</div>
                     <?php if (!empty($cartItems)): ?>
-                        <?php foreach ($cartItems as $item): ?>
+                        <?php foreach ($cartItems as $item): $ct=$ct+1?>
                             <div class="order-mini-item">
                                 <div class="omi-img">
-                                    <img src="../images/products/<?= $item['PID'] ?>.jpg"
-                                        alt="<?= htmlspecialchars($item['name']) ?>"
+                                    <img src="<?= $item->variants[0]->img_url[0];?>"
+                                        alt="<?= htmlspecialchars($item->name) ?>"
                                         style="width:100%;height:100%;object-fit:cover">
                                 </div>
                                 <div>
-                                    <div class="omi-name"><?= htmlspecialchars($item['name']) ?></div>
-                                    <div class="omi-var"><?= htmlspecialchars($item['category']) ?></div>
-                                    <div class="omi-pr"><?= number_format($item['price'] * $item['quantity'], 2) ?> EGP</div>
+                                    <div class="omi-name"><?=$item->name ?></div>
+                                    <div class="omi-var"><?= htmlspecialchars($item->category) ?></div>
+                                    <div class="omi-pr"><?= number_format($item->price *  $cart_info[$ct]['quantity'], 2) ?> EGP</div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
