@@ -23,7 +23,7 @@
                     <li><a onclick="goTo('cart')">My Cart 🛍</a></li>
                     <li><a onclick="goTo('favorites')">Wishlist 💕</a></li>
                     <li><a onclick="goTo('track')">Track Order</a></li>
-                    <li><a onclick="goTo('reviews')">Reviews ⭐</a></li>
+                    <li><a onclick="goTo('reviews.php')">Reviews ⭐</a></li>
                 </ul>
             </div>
             <div>
@@ -38,7 +38,7 @@
             </div>
         </div>
         <div class="ft-bottom">
-            <span class="ft-copy">© 2025 Tretto.eg · All rights reserved · Prices in Egyptian Pounds (EGP) 💕</span>
+            <span class="ft-copy">© 2026 Tretto.eg · All rights reserved 💕</span>
             <div class="ft-soc"><a class="soc-btn">f</a><a class="soc-btn">ig</a><a class="soc-btn">tw</a></div>
         </div>
     </footer>

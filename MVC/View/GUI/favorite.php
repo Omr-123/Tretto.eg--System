@@ -1,34 +1,76 @@
+<?php
+if (session_status() === PHP_SESSION_NONE)
+    session_start();
+
+require_once __DIR__ . '/../../Controller/favorites_Controller.php';
+
+$userID = isset($_SESSION['userID']) ? intval($_SESSION['userID']) : 0;
+$favorites = getFavoritesForView($userID);
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-       <link rel="stylesheet" href="../css/main.css">
-       <link rel="stylesheet" href="../css/navbar.css">
-       <link rel="stylesheet" href="../css/favorite.css">
-    <title>Document</title>
+    <title>Favorites — Tretto</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/favorite.css">
+    <script src="../javascript/navbar.js" defer></script>
+    <script src="../javascript/all.js" defer></script>
 </head>
+
 <body>
-        <?php include 'component/navbar.php'; ?>
+    <?php include 'component/navbar.php'; ?>
 
     <div class="page" id="page-favorites">
         <div class="page-header">
             <div class="sec-tag">💕 Saved Items</div>
             <h1 class="sec-title">Your <em>Favorites</em></h1>
         </div>
+
         <div class="page-wrap">
-            <div id="fav-empty" class="empty-state">
-                <div class="empty-icon">🤍</div>
-                <div class="empty-title">No favorites yet</div>
-                <div class="empty-sub">Tap the ♡ on any product to save it here.</div><button class="btn-primary"
-                    onclick="goTo('products')">Browse Products 🌸</button>
-            </div>
-            <div class="prod-grid" id="fav-grid" style="display:none"></div>
+            <?php if ($userID === 0): ?>
+                <div class="empty-state">
+                    <div class="empty-icon">🔒</div>
+                    <div class="empty-title">Please log in</div>
+                    <div class="empty-sub">You need to be logged in to view your favorites.</div>
+                    <a href="../GUI/login.php" class="btn-primary">Login</a>
+                </div>
+
+            <?php elseif (empty($favorites)): ?>
+                <div id="fav-empty" class="empty-state">
+                    <div class="empty-icon">🤍</div>
+                    <div class="empty-title">No favorites yet</div>
+                    <div class="empty-sub">Tap the ♡ on any product to save it here.</div>
+                    <button class="btn-primary" onclick="window.location.href='products.php'">
+                        Browse Products 🌸
+                    </button>
+                </div>
+
+            <?php else: ?>
+                <div class="prod-grid" id="fav-grid">
+                    <?php foreach ($favorites as $item): ?>
+                        <div class="prod-card">
+                            <?php if (!empty($item['image'])): ?>
+                                <img src="../images/<?= $item['image'] ?>" alt="<?= $item['name'] ?>" class="prod-img">
+                            <?php else: ?>
+                                <div class="prod-img prod-img-placeholder">No Image</div>
+                            <?php endif; ?>
+
+                            <div class="prod-title"><?= $item['name'] ?></div>
+                            <div class="prod-price"><?= $item['price'] ?> EGP</div>
+
+                            <a href="../../Controller/favorites_Controller.php?action=remove&id=<?= $item['favoriteID'] ?>"
+                                class="btn-secondary">Remove</a>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
+    <?php include 'component/footer.php'; ?>
+    <script src="../javascript/all.js" defer></script>
 </body>
+
 </html>
-
-
-
-I NEED CODE BE DYMAIC AND CONNECTED TO THE BACKEND TO DISPLAY FAVORITE PRODUCTS.To make the favorite products page dynamic and connected to the backend, you can use PHP to fetch the

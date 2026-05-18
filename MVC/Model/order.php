@@ -1,9 +1,9 @@
 <?php
-require_once('../../db.php');
+require_once(__DIR__ . '/../../db.php');
 
 class Order
 {
-    public $order_ID;
+    public $orderID;
     public $userID;
     public $orderDate;
     public $totalAmount;
@@ -15,24 +15,27 @@ class Order
 
     public static function getById($conn, $orderID)
     {
-        $sql = "SELECT o.*, u.name AS userName 
-                FROM orders o 
-                JOIN User u ON o.userID = u.userID 
-                WHERE o.order_ID = ?";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            die("Prepare failed: " . $conn->error);
-        }
-        $stmt->bind_param("i", $orderID);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $orderID = (int) $orderID;
+
+        $sql = "SELECT o.*, u.name AS userName
+                FROM orders o
+                JOIN users u ON o.userID = u.userID
+                WHERE o.orderID = $orderID";
+
+        $result = $conn->query($sql);
+        if (!$result)
+            die("Query failed: " . $conn->error);
+
         if ($row = $result->fetch_assoc()) {
             $order = new Order();
-            foreach ($row as $key => $value) {
-                if (property_exists($order, $key)) {
-                    $order->$key = $value;
-                }
-            }
+            $order->orderID = $row['orderID'];
+            $order->userID = $row['userID'];
+            $order->orderDate = $row['orderDate'];
+            $order->totalAmount = $row['totalAmount'];
+            $order->status = $row['status'];
+            $order->shippingAddress = $row['shippingAddress'];
+            $order->paymentMethod = $row['paymentMethod'];
+            $order->deliveryDate = $row['deliveryDate'];
             $order->userName = $row['userName'];
             return $order;
         }
@@ -41,13 +44,17 @@ class Order
 
     public static function getItems($conn, $orderID)
     {
-        $stmt = $conn->prepare("SELECT product_name, quantity, price FROM order_items WHERE order_ID = ?");
-        if (!$stmt) {
-            die("Prepare failed: " . $conn->error);
-        }
-        $stmt->bind_param("i", $orderID);
-        $stmt->execute();
-        $result = $stmt->get_result();
+        $orderID = (int) $orderID;
+
+        $sql = "SELECT p.name AS product_name, oi.quantity, oi.price
+                FROM order_items oi
+                JOIN product p ON oi.PID = p.PID
+                WHERE oi.orderID = $orderID";
+
+        $result = $conn->query($sql);
+        if (!$result)
+            die("Query failed: " . $conn->error);
+
         $items = [];
         while ($row = $result->fetch_assoc()) {
             $items[] = $row;
