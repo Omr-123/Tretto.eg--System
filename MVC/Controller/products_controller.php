@@ -9,7 +9,7 @@ require_once __DIR__ . '/cart_Controller.php';
 class ProductsController{
 private $conn;
     public function __construct() {
-        $database = new Database();
+        $database = new Databases();
         $this->conn = $database->getConnection();
     }
     public function getAllProducts(){
@@ -63,7 +63,7 @@ private $conn;
         header("Location:cart.php");
         }
 
-       public function addToFav($prod_id, $user_id, $pvid){
+       public function addToFav($prod_id, $user_id){
     $query = "INSERT INTO favorites (userID, PID, addedDate) 
               VALUES (:user_id, :prodID, :time)";
     $stmt = $this->conn->prepare($query);

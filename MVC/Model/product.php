@@ -19,7 +19,7 @@ abstract class Product implements ProductInterface {
     public $conn;
 
     public function __construct($data) {
-        $conn= new Database();
+        $conn= new Databases();
         $this->conn = $conn->getConnection(); 
 
         $this->pid      = $data['PID'] ?? null;

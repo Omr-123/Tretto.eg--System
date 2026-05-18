@@ -48,27 +48,10 @@ class AuthController
         $_SESSION['user_type'] = $user->user_type;
         $_SESSION['logged_in'] = true;
 
-        $redirect = ($user->user_type === 'admin')
-            ? '/Tretto.eg--System/MVC/View/GUI/admin-dashboard.php'
-            : '/Tretto.eg--System/MVC/View/GUI/index.php';
-
-        return [
-            'success' => true,
-            'authError' => '',
-            'old' => ['email' => $email],
-            'redirect' => $redirect,
-        ];
-    }
-
-    public function login(): void
-    {
-        $result = $this->processLogin($_POST);
-
-        if (!$result['success']) {
-            $authError = $result['authError'];
-            $old = $result['old'];
-            require __DIR__ . '/../View/GUI/login.php';
-            exit;
+        if ($user->user_type === 'admin') {
+            header('Location: /Tretto.eg--System/MVC/View/GUI/component/admin_dashboard.php');
+        } else {
+            header('Location: /Tretto.eg--System/MVC/View/GUI/component/index.php');
         }
 
         header('Location: ' . $result['redirect']);
