@@ -10,7 +10,7 @@ $id=-1;
 if($id==-1){
     $id=$A;
 }
-$user_id = 1;
+$user_id = $_SESSION['userID'];
 $i=isset($_GET['i']) ? (int)$_GET['i'] : 0;
 $Img_Active = isset($_GET['Img_Active']) ? (int)$_GET['Img_Active'] : 0;
 $ct=-1;
@@ -21,10 +21,10 @@ $ct2=-1;
 $prod=new ProductsController();
 $product=$prod->getProductbyID($id);
 if (isset($_GET['add_to_cart'])) {
-    $prod->addToCart($_GET['add_to_cart'],$i+1,$product->price, $user_id);
+    $prod->addToCart($_GET['add_to_cart'],$i+1,$product->price, $_SESSION['userID']);
 }
 if (isset($_GET['add_to_fav'])) {
-    $list->addToFav((int)$_GET['add_to_fav'], $user_id);
+    $list->addToFav((int)$_GET['add_to_fav'], $_SESSION['userID']);
 }
 
 ?>

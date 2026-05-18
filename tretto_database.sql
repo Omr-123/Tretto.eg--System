@@ -117,10 +117,8 @@ INSERT INTO `product_variants` (`pvid`, `PID`, `color`, `stock`, `add_price`, `s
 -- ================================================
 DROP TABLE IF EXISTS `product_images`;
 CREATE TABLE IF NOT EXISTS `product_images` (
-  `piid` int NOT NULL AUTO_INCREMENT,
   `pvid` int DEFAULT NULL,
   `images` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`piid`),
   KEY `pvid` (`pvid`)
 ) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
