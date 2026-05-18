@@ -17,9 +17,6 @@ class Slipper extends Product {
 
     }
     // Logic to get specific variant image based on user selection
-    public function getVariantImage($color) {
-        return $this->variants[$color]['image'] ?? $this->getDefaultImage();
-    }
 
     // Logic to get all sizes available for a specific color
     public function getSizesByColor($color) {

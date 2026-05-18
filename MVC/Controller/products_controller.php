@@ -63,7 +63,7 @@ private $conn;
         header("Location:cart.php");
         }
 
-       public function addToFav($prod_id, $user_id, $pvid){
+       public function addToFav($prod_id, $user_id){
     $query = "INSERT INTO favorites (userID, PID, addedDate) 
               VALUES (:user_id, :prodID, :time)";
     $stmt = $this->conn->prepare($query);

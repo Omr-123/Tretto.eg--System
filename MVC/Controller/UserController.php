@@ -1,5 +1,7 @@
 <?php
 require_once(__DIR__ . '/../../db.php');
+require_once __DIR__ . '/cart_Controller.php';
+
 
 class UserController
 {
@@ -21,15 +23,11 @@ class UserController
     // Cart total quantity
     public function cart_Number($ID)
     {
-        $query = "
-            SELECT SUM(ci.quantity) as total
-            FROM cart c
-            JOIN cart_items ci ON c.cartID = ci.cartID
-            WHERE c.userID = :ID
-        ";
-
+        $cart=new Cart_Controller();
+        $cartID=$cart->getUserCart($ID);
+        $query="SELECT SUM(quantity) as total FROM cart_items WHERE cartID=:ID";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':ID', $ID);
+        $stmt->bindParam(':ID', $cartID);
         $stmt->execute();
 
         $result = $stmt->fetch();
