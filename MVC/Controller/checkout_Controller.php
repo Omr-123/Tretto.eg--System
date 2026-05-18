@@ -1,7 +1,7 @@
 <?php
 if (session_status() === PHP_SESSION_NONE)
     session_start();
-require_once __DIR__ . '/../Model/Checkout.php';
+require_once __DIR__ . '/../Model/checkout.php';
 
 if (empty($_SESSION['logged_in'])) {
     header('Location: /Tretto.eg--System/MVC/View/GUI/login.php');

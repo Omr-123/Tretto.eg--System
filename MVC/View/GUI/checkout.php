@@ -2,7 +2,7 @@
 if (session_status() === PHP_SESSION_NONE)
     session_start();
 require_once __DIR__ . '/../../../db.php';
-require_once __DIR__ . '/../../Model/Checkout.php';
+require_once __DIR__ . '/../../Model/checkout.php';
 
 if (!isset($cartItems) || !isset($total)) {
     $userID = $_SESSION['userID'] ?? null;
