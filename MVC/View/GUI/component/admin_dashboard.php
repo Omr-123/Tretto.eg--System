@@ -254,7 +254,8 @@ admin_header('Dashboard', 'dashboard');
                         <td><?= h($r['reason'] ?? '') ?></td>
                         <td><button class="btn btn-rose"
                                 onclick="applyRefund(<?= (int) ($r['refundID'] ?? 0) ?>)">Approve</button> <button
-                                class="btn btn-danger" onclick="denyRefund(<?= (int) ($r['refundID'] ?? 0) ?>)">Deny</button>
+                                class="btn btn-danger"
+                                onclick="denyRefund(<?= (int) ($r['refundID'] ?? 0) ?>)">Deny</button>
                         </td>
                     </tr><?php endforeach; ?>
                 <?php if (!$refunds): ?>

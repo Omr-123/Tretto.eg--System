@@ -197,7 +197,7 @@ class AdminController
         $success = $this->admin->updateProductVariant($_POST);
         if ($success) {
             $img = $this->handleUpload();
-            $PID= (int) ($_POST['PID'] ?? 0);
+            $PID = (int) ($_POST['PID'] ?? 0);
             if ($img !== '' && $PID > 0) {
                 $this->admin->addVariantImage($PID, $img);
             }
