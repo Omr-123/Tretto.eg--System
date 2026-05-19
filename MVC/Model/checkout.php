@@ -1,6 +1,5 @@
 <?php
 require_once __DIR__ . '/../../db.php';
-
 class Checkout
 {
     private static function conn(): mysqli
@@ -8,13 +7,11 @@ class Checkout
         global $conn;
         return $conn;
     }
-
     public static function getCartItems(int $userID): array
     {
         if ($userID <= 0) {
             return ['items' => [], 'total' => 0];
         }
-
         $conn = self::conn();
         $stmt = $conn->prepare("
             SELECT ci.PID, ci.quantity, ci.price, p.name, p.category
@@ -23,25 +20,20 @@ class Checkout
             INNER JOIN product p ON ci.PID = p.PID
             WHERE ca.userID = ?
         ");
-
         if (!$stmt) {
             return ['items' => [], 'total' => 0];
         }
-
         $stmt->bind_param('i', $userID);
         $stmt->execute();
         $result = $stmt->get_result();
         $items = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
         $stmt->close();
-
         $total = 0.0;
         foreach ($items as $row) {
             $total += (float) $row['price'] * (int) $row['quantity'];
         }
-
         return ['items' => $items, 'total' => round($total, 2)];
     }
-
     public static function saveCheckout(
         int $userID,
         string $shippingAddress,

@@ -16,47 +16,45 @@ class Order
     public static function getById($conn, $orderID)
     {
         $orderID = (int) $orderID;
+        $stmt = $conn->prepare(
+            "SELECT o.*, u.name AS userName
+             FROM orders o
+             JOIN users u ON o.userID = u.userID
+             WHERE o.orderID = ?"
+        );
+        $stmt->bind_param("i", $orderID);
+        $stmt->execute();
+        $row = $stmt->get_result()->fetch_assoc();
 
-        $sql = "SELECT o.*, u.name AS userName
-                FROM orders o
-                JOIN users u ON o.userID = u.userID
-                WHERE o.orderID = $orderID";
+        if (!$row)
+            return null;
 
-        $result = $conn->query($sql);
-        if (!$result)
-            die("Query failed: " . $conn->error);
-
-        if ($row = $result->fetch_assoc()) {
-            $order = new Order();
-            $order->orderID = $row['orderID'];
-            $order->userID = $row['userID'];
-            $order->orderDate = $row['orderDate'];
-            $order->totalAmount = $row['totalAmount'];
-            $order->status = $row['status'];
-            $order->shippingAddress = $row['shippingAddress'];
-            $order->paymentMethod = $row['paymentMethod'];
-            $order->deliveryDate = $row['deliveryDate'];
-            $order->userName = $row['userName'];
-            return $order;
-        }
-        return null;
+        $order = new Order();
+        $order->orderID = $row['orderID'];
+        $order->userID = $row['userID'];
+        $order->orderDate = $row['orderDate'];
+        $order->totalAmount = $row['totalAmount'];
+        $order->status = $row['status'];
+        $order->shippingAddress = $row['shippingAddress'];
+        $order->paymentMethod = $row['paymentMethod'];
+        $order->deliveryDate = $row['deliveryDate'];
+        $order->userName = $row['userName'];
+        return $order;
     }
+
     public static function getItems($conn, $orderID)
     {
         $orderID = (int) $orderID;
-
-        $sql = "SELECT p.name AS product_name, oi.quantity, oi.price,
-                   pi.images
-            FROM order_items oi
-            JOIN product p ON oi.PID = p.PID
-            LEFT JOIN product_variants pv ON pv.PID = p.PID
-            LEFT JOIN product_images pi ON pi.pvid = pv.pvid
-            WHERE oi.orderID = $orderID
-            GROUP BY oi.itemID";
-
-        $result = $conn->query($sql);
-        if (!$result)
-            die("Query failed: " . $conn->error);
+        $stmt = $conn->prepare(
+            "SELECT p.name AS product_name, oi.quantity, oi.price,
+                    (SELECT images FROM product_images WHERE PID = p.PID LIMIT 1) AS images
+             FROM order_items oi
+             JOIN product p ON oi.PID = p.PID
+             WHERE oi.orderID = ?"
+        );
+        $stmt->bind_param("i", $orderID);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
         $items = [];
         while ($row = $result->fetch_assoc()) {

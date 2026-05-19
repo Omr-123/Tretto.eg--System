@@ -2,8 +2,9 @@
 if (session_status() === PHP_SESSION_NONE)
     session_start();
 require_once __DIR__ . '/../Model/checkout.php';
+require_once __DIR__ . '/../Model/PaymentModel.php';
 
-if (empty($_SESSION['logged_in'])) {
+if (empty($_SESSION['userID'])) {
     header('Location: /Tretto.eg--System/MVC/View/GUI/login.php');
     exit;
 }
@@ -11,14 +12,19 @@ if (empty($_SESSION['logged_in'])) {
 $userID = (int) $_SESSION['userID'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    $cartData = Checkout::getCartItems($userID);
-    $cartItems = $cartData['items'];
-    $total = $cartData['total'];
+    require_once __DIR__ . '/cart_Controller.php';
+    $cartCtrl = new Cart_Controller();
+    $cartItems = $cartCtrl->get_cart_items($userID);
+    $cart_info = $cartCtrl->get_cart_info($userID);
 
     if (empty($cartItems)) {
         header('Location: /Tretto.eg--System/MVC/View/GUI/cart.php');
         exit;
     }
+
+    $subtotal = (float) $cartCtrl->Subtotal($userID);
+    $shipping = $subtotal >= PaymentModel::FREE_SHIPPING_MIN ? 0.0 : PaymentModel::SHIPPING_FEE;
+    $total = $subtotal + $shipping;
 
     $user = [
         'firstName' => $_SESSION['firstName'] ?? '',

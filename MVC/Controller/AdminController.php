@@ -57,21 +57,14 @@ class AdminController
 
         $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
         $original = $_FILES[$field]['name'] ?? 'image';
-
-        // ✅ Extract extension
         $ext = strtolower(pathinfo($original, PATHINFO_EXTENSION));
-
         if (!in_array($ext, $allowed, true)) {
             throw new RuntimeException('Invalid image type.');
         }
-
-        // ✅ Clean filename (VERY IMPORTANT)
         $baseName = pathinfo($original, PATHINFO_FILENAME);
         $baseName = preg_replace('/[^a-zA-Z0-9_-]/', '_', $baseName);
-
         $safeName = $baseName . '.' . $ext;
 
-        // ✅ Correct path
         $dir = __DIR__ . '/../assets/images/';
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);
@@ -79,7 +72,6 @@ class AdminController
 
         $target = $dir . $safeName;
 
-        // ⚠️ Prevent overwrite (important)
         $counter = 1;
         while (file_exists($target)) {
             $safeName = $baseName . '_' . $counter . '.' . $ext;

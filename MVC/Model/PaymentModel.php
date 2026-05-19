@@ -9,9 +9,8 @@ class PaymentModel
     public const SHIPPING_FEE = 70.0;
     public const FREE_SHIPPING_MIN = 2000.0;
 
-    public function __construct(?mysqli $conn = null)
+    public function __construct(mysqli $conn)
     {
-        global $conn;
         $this->conn = $conn;
     }
 
@@ -45,13 +44,7 @@ class PaymentModel
                 pv.color,
                 pv.sizes AS size_value,
                 pv.add_price,
-                (
-                    SELECT pi.images
-                    FROM product_images pi
-                    WHERE pi.pvid = ci.pvid
-                    ORDER BY pi.piid ASC
-                    LIMIT 1
-                ) AS image_path
+                (SELECT images FROM product_images WHERE PID = p.PID LIMIT 1) AS image_path
             FROM cart c
             INNER JOIN cart_items ci ON ci.cartID = c.cartID
             INNER JOIN product p ON p.PID = ci.PID
@@ -81,7 +74,7 @@ class PaymentModel
                 'pid' => (int) $row['PID'],
                 'pvid' => (int) $row['pvid'],
                 'name' => $row['product_name'],
-                'image' => $this->resolveImageUrl($row['image_path'] ?? ''),
+                'image' => $this->resolveImageUrlForView($row['image_path'] ?? ''),
                 'size' => $row['size_value'] !== null ? (string) $row['size_value'] : 'N/A',
                 'color' => $row['color'] ?? 'N/A',
                 'quantity' => $qty,
@@ -215,14 +208,25 @@ class PaymentModel
         }
     }
 
-    private function resolveImageUrl(string $path): string
+    public function resolveImageUrlForView(string $path): string
     {
+        $path = trim(str_replace('\\', '/', $path));
         if ($path === '') {
-            return '/Tretto.eg--System/MVC/View/GUI/assets/images/placeholder.png';
+            return '../assets/images/placeholder.svg';
         }
         if (preg_match('#^https?://#i', $path)) {
             return $path;
         }
-        return '/Tretto.eg--System/MVC/View/GUI/' . ltrim($path, '/');
+        if (str_starts_with($path, '../')) {
+            return $path;
+        }
+        if (str_starts_with($path, 'assets/')) {
+            return '../' . $path;
+        }
+        if (str_starts_with($path, '/Tretto.eg--System/MVC/View/GUI/')) {
+            return '../' . ltrim(substr($path, strlen('/Tretto.eg--System/MVC/View/GUI/')), '/');
+        }
+
+        return '../assets/images/' . ltrim($path, '/');
     }
 }

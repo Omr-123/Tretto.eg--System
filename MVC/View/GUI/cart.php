@@ -94,7 +94,6 @@ $ct = -1;
 
                 </div>
 
-                <!-- CART SUMMARY -->
                 <div class="cart-summary">
                     <div class="cs-title">Order Summary</div>
 
@@ -132,7 +131,6 @@ $ct = -1;
         </div>
     </div>
 
-    <!-- Include animation JavaScript only -->
     <?php include 'component/footer.php'; ?>
 
     <script src="../javascript/all.js" defer></script>

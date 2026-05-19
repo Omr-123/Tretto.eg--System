@@ -1,13 +1,9 @@
 <?php
 require_once __DIR__ . '/../Model/exchange.php';
-
 class ExchangeController
 {
     private ExchangeModel $model;
     private int $currentUserID;
-
-    // -------------------------------------------------------------------------
-
     public function __construct()
     {
         if (session_status() === PHP_SESSION_NONE)
@@ -40,7 +36,6 @@ class ExchangeController
                 ];
             }
         }
-
         return [
             'orders' => $displayRows,
             'products' => $this->model->getAvailableProducts(),
@@ -54,14 +49,11 @@ class ExchangeController
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             return ['success' => false, 'message' => 'Invalid request.'];
         }
-
         if (!$this->currentUserID) {
             return ['success' => false, 'message' => 'Please log in first.'];
         }
-
         $raw = $_POST;
         $errors = $this->validate($raw);
-
         if (!empty($errors)) {
             return [
                 'success' => false,
@@ -69,13 +61,10 @@ class ExchangeController
                 'errors' => $errors,
             ];
         }
-
         $orderID = (int) $raw['order_id'];
-
         if (!$this->model->isOrderOwnedByUser($orderID, $this->currentUserID)) {
             return ['success' => false, 'message' => 'This order does not belong to your account.'];
         }
-
         $data = [
             'order_id' => $orderID,
             'user_id' => $this->currentUserID,
@@ -88,33 +77,26 @@ class ExchangeController
             'preferred_color' => $raw['preferred_color'] ?? null,
             'contact_method' => $raw['contact_method'],
         ];
-
         $savedMeta = $this->model->saveRequest($data);
-
         if (!$savedMeta) {
             return [
                 'success' => false,
                 'message' => 'Could not save your request. Please try again.',
             ];
         }
-
         $type = $savedMeta['type'];
         $requestID = $savedMeta['id'];
-
         $saved = $this->model->getSavedRequest(
             $type,
             $requestID,
             (int) $data['old_product_id']
         );
-
         if (!$saved) {
             return ['success' => false, 'message' => 'Request saved but could not be retrieved.'];
         }
-
         $prefix = $type === 'refund' ? 'REF' : 'EXC';
         $reasonLine = (string) ($data['reason'] ?? '');
         $createdAt = $saved['created_at'] ?? 'now';
-
         return [
             'success' => true,
             'reference' => $prefix . '-' . date('Ymd') . '-' . str_pad((string) $requestID, 4, '0', STR_PAD_LEFT),
@@ -129,7 +111,6 @@ class ExchangeController
     private function validate(array $data): array
     {
         $errors = [];
-
         if (empty($data['order_id']) || !is_numeric($data['order_id']))
             $errors['order_id'] = 'Please select an order.';
 
@@ -157,12 +138,10 @@ class ExchangeController
 
         return $errors;
     }
-
     private static function normalizeImagePath(string $path): string
     {
         $path = trim(str_replace('\\', '/', $path));
         $placeholder = 'assets/images/placeholder.svg';
-
         if ($path === '') {
             return $placeholder;
         }
@@ -178,7 +157,6 @@ class ExchangeController
         if (str_starts_with($path, '../')) {
             return ltrim(preg_replace('#^\.\./+#', '', $path), '/');
         }
-
         return 'assets/images/' . ltrim($path, '/');
     }
 }

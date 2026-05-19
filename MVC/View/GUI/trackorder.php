@@ -1,15 +1,15 @@
 <?php
 require_once __DIR__ . '/../../Controller/trackorder_Controller.php';
 
-$order = null;
+$order      = null;
 $trackError = '';
-$orderRef = '';
+$orderRef   = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $result = (new TrackOrderController())->processTrack($_POST);
-    $order = $result['order'];
+    $result     = (new TrackOrderController())->processTrack($_POST);
+    $order      = $result['order'];
     $trackError = $result['trackError'];
-    $orderRef = $result['orderRef'];
+    $orderRef   = $result['orderRef'];
 }
 ?>
 <!DOCTYPE html>

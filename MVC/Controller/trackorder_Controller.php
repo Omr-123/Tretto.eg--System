@@ -1,42 +1,31 @@
 <?php
-
 require_once __DIR__ . '/../../db.php';
 require_once __DIR__ . '/../Model/TrackOrder.php';
 
 class TrackOrderController
 {
-    /**
-     * @return array{order: ?array, trackError: string, orderRef: string}
-     */
     public function processTrack(array $post): array
     {
         $orderRef = trim($post['order_id'] ?? '');
-        $order = null;
-        $trackError = '';
 
         if ($orderRef === '') {
-            return [
-                'order' => null,
-                'trackError' => 'Order not found',
-                'orderRef' => '',
-            ];
+            return ['order' => null, 'trackError' => 'Order not found', 'orderRef' => ''];
         }
 
-        $database = new Database();
+        $database = new Databases();     
         $pdo = $database->getConnection();
 
-        if ($pdo) {
-            $tracker = new TrackOrder($pdo);
-            $order = $tracker->findByReference($orderRef);
+        if (!$pdo) {
+            return ['order' => null, 'trackError' => 'Database error', 'orderRef' => $orderRef];
         }
 
-        if ($order === null) {
-            $trackError = 'Order not found';
-        }
+        $tracker = new TrackOrder($pdo);
+        $order = $tracker->findByReference($orderRef);
+
         return [
-            'order' => $order,
-            'trackError' => $trackError,
-            'orderRef' => $orderRef,
+            'order'      => $order,
+            'trackError' => $order === null ? 'Order not found' : '',
+            'orderRef'   => $orderRef,
         ];
     }
 }

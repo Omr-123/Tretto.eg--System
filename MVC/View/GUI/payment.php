@@ -1,11 +1,12 @@
 <?php
 require_once __DIR__ . '/../../Controller/PaymentController.php';
+require_once __DIR__ . '/../../Controller/cart_Controller.php';
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (empty($_SESSION['logged_in']) || empty($_SESSION['userID'])) {
+if (empty($_SESSION['userID'])) {
     header('Location: /Tretto.eg--System/MVC/View/GUI/login.php');
     exit;
 }
@@ -20,6 +21,7 @@ $totals = $data['totals'];
 $paymentMethod = $data['paymentMethod'];
 $error = $data['error'];
 $isEmpty = $data['isEmpty'];
+$checkout = $data['checkout'] ?? null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     $result = $controller->processPlaceOrder($userId, $_POST);
@@ -36,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['place_order'])) {
     $items = $data['items'];
     $totals = $data['totals'];
     $isEmpty = $data['isEmpty'];
+    $checkout = $data['checkout'] ?? null;
 }
 
 $formattedTotal = number_format($totals['total'], 2);
@@ -67,8 +70,8 @@ $formattedShipping = number_format($totals['shipping'], 2);
         <div class="page-wrap">
             <?php if ($isEmpty): ?>
                 <div class="payment-empty">
-                    <p>Your cart is empty</p>
-                    <a href="/Tretto.eg--System/MVC/View/GUI/products.php" class="btn-primary">Browse Products</a>
+                    <p>Your cart is empty.</p>
+                    <a href="products.php" class="btn-primary">Browse Products</a>
                 </div>
             <?php else: ?>
                 <div class="payment-layout">
@@ -80,7 +83,13 @@ $formattedShipping = number_format($totals['shipping'], 2);
                                 value="<?= htmlspecialchars($paymentMethod) ?>">
 
                             <?php if ($error !== ''): ?>
-                                <div class="payment-alert" role="alert"><?= htmlspecialchars($error) ?></div>
+                                <div class="payment-alert" role="alert">
+                                    <?= htmlspecialchars($error) ?>
+                                    <?php if (!$checkout): ?>
+                                        <a href="/Tretto.eg--System/MVC/Controller/checkout_Controller.php"
+                                            class="payment-alert-link">Go to Checkout</a>
+                                    <?php endif; ?>
+                                </div>
                             <?php endif; ?>
 
                             <div class="co-section-title">Payment Method 💳</div>
@@ -150,11 +159,12 @@ $formattedShipping = number_format($totals['shipping'], 2);
                         <?php foreach ($items as $item):
                             $color = $item['color'] ?? '';
                             $isHexColor = preg_match('/^#[0-9A-Fa-f]{3,8}$/', $color);
-                        ?>
+                            ?>
                             <div class="order-mini-item">
                                 <div class="omi-img">
-                                    <img src="<?= htmlspecialchars($item['image']) ?>"
-                                        alt="<?= htmlspecialchars($item['name']) ?>">
+                                    <img src="<?= htmlspecialchars($item['image'] ?? '') ?>"
+                                        alt="<?= htmlspecialchars($item['name'] ?? 'Product') ?>"
+                                        style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
                                 </div>
                                 <div class="omi-body">
                                     <div class="omi-name"><?= htmlspecialchars($item['name']) ?></div>

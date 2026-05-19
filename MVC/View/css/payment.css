@@ -1,5 +1,31 @@
 /* ════════════════════ PAYMENT PAGE ════════════════════ */
 
+#page-payment {
+    padding-top: 88px;
+}
+
+.payment-alert-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--rose, #c45c7a);
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.checkout-summary-box {
+    background: var(--cream, #faf6f4);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 28px;
+}
+
+.checkout-summary-line {
+    margin: 0 0 6px;
+    font-size: 14px;
+    color: var(--text-muted, #6b5a62);
+}
+
 .payment-layout {
     display: grid;
     grid-template-columns: 1fr 340px;

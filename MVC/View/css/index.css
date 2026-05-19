@@ -144,7 +144,18 @@
             align-items: center
         }
 
+        a.hero-main-card,
+        a.hero-mini-card,
+        a.hero-main-card:link,
+        a.hero-main-card:visited,
+        a.hero-mini-card:link,
+        a.hero-mini-card:visited {
+            text-decoration: none;
+            color: inherit
+        }
+
         .hero-main-card {
+            display: block;
             width: 220px;
             background: rgba(255, 255, 255, .92);
             border-radius: 16px;
@@ -175,6 +186,11 @@
 
         .hero-card-info {
             padding: 14px 16px
+        }
+
+        .hero-main-card *,
+        .hero-mini-card * {
+            text-decoration: none
         }
 
         .hero-card-name {
@@ -217,6 +233,7 @@
         }
 
         .hero-mini-card {
+            display: block;
             width: 96px;
             background: rgba(255, 255, 255, .88);
             border-radius: 12px;
@@ -369,4 +386,83 @@
 
         .t-ico {
             color: var(--rose-l)
+        }
+
+        #page-home .hero {
+            min-height: calc(100vh - 68px)
+        }
+
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                min-height: auto
+            }
+
+            .hero-l {
+                padding: 56px 32px 48px
+            }
+
+            .hero-r {
+                min-height: 420px;
+                padding: 48px 24px 56px
+            }
+
+            .hero-pill {
+                top: 20px;
+                right: 20px
+            }
+
+            .home-sec {
+                padding: 48px 32px
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-l {
+                padding: 40px 24px 32px
+            }
+
+            .hero-h1 {
+                font-size: clamp(32px, 8vw, 48px)
+            }
+
+            .hero-sub {
+                max-width: none
+            }
+
+            .hero-trust {
+                flex-wrap: wrap;
+                gap: 20px
+            }
+
+            .hero-r {
+                min-height: 360px
+            }
+
+            .hero-main-card {
+                width: min(220px, 72vw)
+            }
+
+            .home-sec {
+                padding: 40px 24px
+            }
+
+            .home-sec-hd {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                margin-bottom: 28px
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-cta .btn-primary {
+                width: 100%;
+                text-align: center
+            }
+
+            .hero-mini-row {
+                flex-wrap: wrap;
+                justify-content: center
+            }
         }
